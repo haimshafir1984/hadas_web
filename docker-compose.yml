@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: parpar
+      POSTGRES_PASSWORD: parpar
+      POSTGRES_DB: parpar_sagol
+    ports:
+      - "5432:5432"
+    volumes:
+      - parpar_pgdata:/var/lib/postgresql/data
+
+volumes:
+  parpar_pgdata:

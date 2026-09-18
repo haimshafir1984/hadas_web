@@ -1,0 +1,14 @@
+import { PrismaClient } from "@prisma/client";
+import { seedDatabase } from "../src/lib/seed-data";
+
+const prisma = new PrismaClient();
+
+seedDatabase(prisma)
+  .then(() => console.log("Seed complete."))
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
