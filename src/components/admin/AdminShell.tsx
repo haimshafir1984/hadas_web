@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoMark } from "../icons";
+import Logo from "../Logo";
 import LogoutButton from "./LogoutButton";
 
 const NAV = [
@@ -26,9 +26,8 @@ export default function AdminShell({
   return (
     <div className="adm">
       <nav className="adm-side">
-        <div className="lg">
-          <LogoMark size={20} />
-          {storeName ?? "פרפר סגול"}
+        <div className="lg" style={{ background: "#fff", borderRadius: 10, padding: "6px 10px", width: "fit-content" }}>
+          <Logo height={22} />
         </div>
         {NAV.map((item) => (
           <Link key={item.href} className={item.href === active ? "on" : ""} href={item.href}>

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BagIcon, BurgerIcon, CloseIcon, LogoMark } from "./icons";
+import { BagIcon, BurgerIcon, CloseIcon } from "./icons";
+import Logo from "./Logo";
 import { useCart } from "@/lib/cart-context";
 import type { NavCategory } from "@/lib/types";
 
@@ -33,8 +34,7 @@ export default function SiteChrome({
       <header className="site">
         <div className="wrap mheader">
           <Link className="mlogo" href="/">
-            <LogoMark size={24} />
-            פרפר סגול
+            <Logo height={52} />
           </Link>
           <div className="mtools">
             <Link className="micon" href="/cart" aria-label="סל קניות">
@@ -57,8 +57,7 @@ export default function SiteChrome({
       <aside className={`drawer ${open ? "show" : ""}`} aria-hidden={!open}>
         <div className="drawer-head">
           <Link className="mlogo" href="/" onClick={() => setOpen(false)}>
-            <LogoMark />
-            פרפר סגול
+            <Logo height={40} />
           </Link>
           <button className="micon" aria-label="סגירה" onClick={() => setOpen(false)}>
             <CloseIcon />

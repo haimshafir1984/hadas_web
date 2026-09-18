@@ -1,11 +1,3 @@
-export function LogoMark({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.6">
-      <path d="M16 7v18M16 11c-3-4.5-10-4.5-11 1s6.5 8.5 11 4.5M16 11c3-4.5 10-4.5 11 1s-6.5 8.5-11 4.5" />
-    </svg>
-  );
-}
-
 export function BagIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
