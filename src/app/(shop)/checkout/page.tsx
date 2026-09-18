@@ -54,7 +54,7 @@ export default function CheckoutPage() {
       </div>
       <h1 style={{ fontSize: 26, marginBottom: 6 }}>פרטים אישיים וכתובת</h1>
       <p style={{ color: "var(--ink-2)", marginTop: 0 }}>ההזמנה מגיעה למייל של פרפר סגול. נחזור אלייך לאישור לפני החיוב.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 18 }}>
+      <div className="checkout-fields">
         <label style={{ display: "grid", gap: 6, fontSize: 13, color: "var(--ink-2)" }}>
           שם מלא
           <input style={inputStyle} value={form.name} onChange={set("name")} />

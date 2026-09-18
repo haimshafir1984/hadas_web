@@ -47,7 +47,7 @@ export default async function CategoryView({ catId, subId }: { catId: string; su
       orderBy: { createdAt: "desc" },
     });
     return (
-      <div className="wrap">
+      <div className="wrap category-page category-page-modern">
         <div className="crumb">
           <Link href="/">דף הבית</Link> ← מבצעים
         </div>
@@ -96,7 +96,7 @@ export default async function CategoryView({ catId, subId }: { catId: string; su
   const title = activeSub ? activeSub.name : category.name;
 
   return (
-    <div className="wrap">
+    <div className="wrap category-page category-page-modern">
       <div className="crumb">
         <Link href="/">דף הבית</Link> ← <Link href={`/c/${category.id}`}>{category.name}</Link>
         {activeSub ? ` ← ${activeSub.name}` : ""}

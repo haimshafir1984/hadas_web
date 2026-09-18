@@ -22,8 +22,9 @@ export default async function HomePage() {
   const stages = circles?.subcategories ?? [];
 
   return (
-    <div className="wrap">
+    <div className="wrap home-page">
       <div className="owner">
+        <span className="hero-kicker">התאמה אישית · נוחות · ביטחון</span>
         <div className="owner-pic">ה</div>
         <p>
           שלום, אני הדס והאושר שלי בחיים זה פרפר סגול. אני חיה את עולם החזיות והבגדים, ואני רואה בזה שליחות — למצוא
@@ -33,6 +34,29 @@ export default async function HomePage() {
         </p>
         <div>
           <span className="who">הדס, בעלת פרפר סגול</span> · <Link href="/about">לקרוא את הסיפור המלא</Link>
+        </div>
+        <div className="hero-actions">
+          <Link className="btn-v" href="/c/bras">
+            למצוא את החזייה שלי
+          </Link>
+          <Link className="btn-o" href="/quiz">
+            לא יודעת מה מתאים לי?
+          </Link>
+        </div>
+      </div>
+
+      <div className="home-benefits" aria-label="היתרונות של פרפר סגול">
+        <div className="home-benefit">
+          <span className="home-benefit-icon">✦</span>
+          <div><strong>ייעוץ אישי</strong><span>מישהי אמיתית שמקשיבה</span></div>
+        </div>
+        <div className="home-benefit">
+          <span className="home-benefit-icon">✓</span>
+          <div><strong>בחירה בטוחה</strong><span>מידות, גזרות והכוונה ברורה</span></div>
+        </div>
+        <div className="home-benefit">
+          <span className="home-benefit-icon">♡</span>
+          <div><strong>נוחות לאורך היום</strong><span>בדים נעימים וגזרות צנועות</span></div>
         </div>
       </div>
 
