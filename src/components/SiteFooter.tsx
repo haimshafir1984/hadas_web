@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { WhatsAppIcon } from "./icons";
 import type { NavCategory } from "@/lib/types";
 
@@ -10,40 +9,23 @@ export default function SiteFooter({
   storeName,
   address,
   phone,
+  aboutText,
 }: {
   categories: NavCategory[];
   storeName: string;
   address: string;
   phone: string;
+  aboutText: string;
 }) {
-  const [subscribed, setSubscribed] = useState(false);
-
   return (
     <>
       <footer className="site">
         <div className="wrap" style={{ paddingTop: 34 }}>
-          <div className="news">
-            <div>
-              <h3>10% הנחה על ההזמנה הראשונה</h3>
-              <p>מדריכי מידות, מבצעים ודגמים חדשים — פעם בשבועיים, בלי ספאם.</p>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setSubscribed(true);
-              }}
-            >
-              <input type="email" placeholder="המייל שלך" aria-label="כתובת מייל" required />
-              <button className="btn" type="submit">
-                {subscribed ? "נרשמת ✓" : "הרשמה"}
-              </button>
-            </form>
-          </div>
           <div className="fg">
             <div>
               <div style={{ marginBottom: 10, fontWeight: 800 }}>{storeName}</div>
               <p style={{ fontSize: 14, color: "var(--ink-2)", maxWidth: "34ch", margin: 0 }}>
-                הלבשה תחתונה עם התאמה אישית מאז 2009. {address} · {phone}
+                {aboutText} {address} · {phone}
               </p>
             </div>
             <div>
@@ -71,6 +53,7 @@ export default function SiteFooter({
               <ul>
                 <li><Link href="/about">משלוחים והחזרות</Link></li>
                 <li><Link href="/quiz">שאלון התאמת חזייה</Link></li>
+                <li><Link href="/size-guide">מדריך מידות</Link></li>
                 <li><Link href="/about">הצהרת נגישות</Link></li>
                 <li><Link href="/about">תנאי שימוש</Link></li>
                 <li><Link href="/about">מדיניות פרטיות</Link></li>

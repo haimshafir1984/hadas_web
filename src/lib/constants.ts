@@ -2,13 +2,6 @@
 // mirroring the prototype's hardcoded vCat('circles') filter.
 export const CIRCLES_PRODUCT_IDS = ["b3", "b6", "b5", "u1", "s1", "u5", "c4"];
 
-export const CIRCLES_STAGE_BLURBS = [
-  "שינויי מידה ופתיחה נוחה",
-  "גזרות חלקות לשמלה",
-  "חזיות ראשונות ורכות",
-  "תמיכה מותאמת לאימון",
-  "בדים קלים ואוורור",
-];
 
 export const QUIZ_STEPS: { q: string; a: string[] }[] = [
   { q: "מה מביא אותך אלינו היום?", a: ["חזייה יומיומית", "חזיית הנקה", "אירוע או שמלה", "ספורט", "החזייה הראשונה"] },

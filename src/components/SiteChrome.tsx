@@ -8,13 +8,7 @@ import Logo from "./Logo";
 import { useCart } from "@/lib/cart-context";
 import type { NavCategory } from "@/lib/types";
 
-export default function SiteChrome({
-  categories,
-  tickerHtml,
-}: {
-  categories: NavCategory[];
-  tickerHtml: string;
-}) {
+export default function SiteChrome({ categories }: { categories: NavCategory[] }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { count } = useCart();
@@ -28,21 +22,49 @@ export default function SiteChrome({
   return (
     <>
       <div className="note">אתר פרפר סגול · גרסה בבדיקות</div>
-      {/* eslint-disable-next-line react/no-danger */}
-      <div className="ticker" dangerouslySetInnerHTML={{ __html: tickerHtml }} />
 
       <header className="site">
         <div className="wrap mheader">
           <Link className="mlogo" href="/">
             <Logo height={52} />
           </Link>
+          <nav className="topnav" aria-label="ראשי">
+            {categories.map((c) => (
+              <div className="tn-item" key={c.id}>
+                <Link href={`/c/${c.id}`} className={isOn(`/c/${c.id}`) ? "on" : ""}>
+                  {c.name}
+                </Link>
+                {c.subs.length > 0 && (
+                  <div className="tn-drop">
+                    {c.subs.map((sub) => (
+                      <Link key={sub.id} href={`/c/${c.id}/${sub.id}`}>
+                        {sub.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            <div className="tn-item">
+              <Link href="/size-guide" className={isOn("/size-guide") ? "on" : ""}>מדריך מידות</Link>
+            </div>
+            <div className="tn-item">
+              <Link href="/guides" className={isOn("/guides") ? "on" : ""}>מדריכים</Link>
+            </div>
+            <div className="tn-item">
+              <Link href="/about" className={isOn("/about") ? "on" : ""}>עלינו</Link>
+            </div>
+            <div className="tn-item">
+              <Link href="/c/sale" className="tn-sale">מבצעים</Link>
+            </div>
+          </nav>
           <div className="mtools">
             <Link className="micon" href="/cart" aria-label="סל קניות">
               <BagIcon />
               {count > 0 && <span className="bagn">{count}</span>}
             </Link>
             <button
-              className="micon"
+              className="micon burger"
               aria-label="תפריט"
               aria-expanded={open}
               onClick={() => setOpen((o) => !o)}
@@ -92,6 +114,9 @@ export default function SiteChrome({
           ))}
           <Link className={`dn-link ${isOn("/quiz") ? "on" : ""}`} href="/quiz" onClick={() => setOpen(false)}>
             שאלון התאמת חזייה
+          </Link>
+          <Link className={`dn-link ${isOn("/size-guide") ? "on" : ""}`} href="/size-guide" onClick={() => setOpen(false)}>
+            מדריך מידות
           </Link>
           <Link className={`dn-link ${isOn("/guides") ? "on" : ""}`} href="/guides" onClick={() => setOpen(false)}>
             מדריכים

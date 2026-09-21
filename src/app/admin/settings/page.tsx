@@ -15,7 +15,6 @@ export default async function AdminSettingsPage() {
           storeName: settings?.storeName ?? "פרפר סגול",
           phone: settings?.phone ?? "",
           address: settings?.address ?? "",
-          tickerHtml: settings?.tickerHtml ?? "",
           shippingCost: settings?.shippingCost ?? 29,
           freeShippingOver: settings?.freeShippingOver ?? 250,
         }}

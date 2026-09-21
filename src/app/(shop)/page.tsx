@@ -3,73 +3,52 @@ import { prisma } from "@/lib/prisma";
 import Carousel from "@/components/Carousel";
 import { CategoryTile, GuideTile } from "@/components/CategoryTile";
 import StageTile from "@/components/StageTile";
-import { CIRCLES_STAGE_BLURBS } from "@/lib/constants";
+import { getTexts } from "@/lib/site-texts";
 
 export const dynamic = "force-dynamic";
 
+const withSubs = { subcategories: { orderBy: { order: "asc" as const } } };
+
 export default async function HomePage() {
-  const [bras, under, cloth, circles, guides] = await Promise.all([
-    prisma.category.findUnique({ where: { id: "bras" }, include: { subcategories: { orderBy: { order: "asc" } } } }),
-    prisma.category.findUnique({ where: { id: "under" }, include: { subcategories: { orderBy: { order: "asc" } } } }),
-    prisma.category.findUnique({ where: { id: "cloth" }, include: { subcategories: { orderBy: { order: "asc" } } } }),
-    prisma.category.findUnique({ where: { id: "circles" }, include: { subcategories: { orderBy: { order: "asc" } } } }),
+  const [bras, under, cloth, circles, guides, t] = await Promise.all([
+    prisma.category.findUnique({ where: { id: "bras" }, include: withSubs }),
+    prisma.category.findUnique({ where: { id: "under" }, include: withSubs }),
+    prisma.category.findUnique({ where: { id: "cloth" }, include: withSubs }),
+    prisma.category.findUnique({ where: { id: "circles" }, include: withSubs }),
     prisma.guide.findMany({ orderBy: { order: "asc" } }),
+    getTexts(),
   ]);
 
-  const brasSubs = (bras?.subcategories ?? []).slice(0, 5);
-  const underSubs = (under?.subcategories ?? []).slice(0, 4);
-  const clothSubs = (cloth?.subcategories ?? []).slice(0, 4);
-  const stages = circles?.subcategories ?? [];
+  const tiles = (cat: typeof bras) =>
+    (cat?.subcategories ?? []).map((s) => <CategoryTile key={s.id} name={s.name} href={`/c/${cat!.id}/${s.id}`} />);
 
   return (
     <div className="wrap home-page">
       <div className="owner">
-        <span className="hero-kicker">התאמה אישית · נוחות · ביטחון</span>
-        <div className="owner-pic">ה</div>
-        <p>
-          שלום, אני הדס והאושר שלי בחיים זה פרפר סגול. אני חיה את עולם החזיות והבגדים, ואני רואה בזה שליחות — למצוא
-          לכל אישה בדיוק את המידה שמתאימה לה.
-          <br />
-          ברוכה הבאה לאתר שלי, אני שמחה כל כך שהגעת!
-        </p>
-        <div>
-          <span className="who">הדס, בעלת פרפר סגול</span> · <Link href="/about">לקרוא את הסיפור המלא</Link>
+        <div className="owner-copy">
+          <p>
+            {t["home.hero.text"].split("\n").map((line, i) => (
+              <span key={i}>
+                {i > 0 && <br />}
+                {line}
+              </span>
+            ))}
+          </p>
+          <div>
+            <span className="who">{t["home.hero.who"]}</span> · <Link href="/about">{t["home.hero.link"]}</Link>
+          </div>
         </div>
-        <div className="hero-actions">
-          <Link className="btn-v" href="/c/bras">
-            למצוא את החזייה שלי
-          </Link>
-          <Link className="btn-o" href="/quiz">
-            לא יודעת מה מתאים לי?
-          </Link>
+        <div className="owner-pic" aria-hidden="true">
+          ה
         </div>
       </div>
 
-      <div className="home-benefits" aria-label="היתרונות של פרפר סגול">
-        <div className="home-benefit">
-          <span className="home-benefit-icon">✦</span>
-          <div><strong>ייעוץ אישי</strong><span>מישהי אמיתית שמקשיבה</span></div>
-        </div>
-        <div className="home-benefit">
-          <span className="home-benefit-icon">✓</span>
-          <div><strong>בחירה בטוחה</strong><span>מידות, גזרות והכוונה ברורה</span></div>
-        </div>
-        <div className="home-benefit">
-          <span className="home-benefit-icon">♡</span>
-          <div><strong>נוחות לאורך היום</strong><span>בדים נעימים וגזרות צנועות</span></div>
-        </div>
-      </div>
-
-      <section className="section" style={{ paddingTop: 20 }}>
+      <section className="section" style={{ paddingTop: 40 }}>
         <div className="s-intro">
-          <h2>חזיות</h2>
-          <p>חזיות זה לא בגד שקונים סתם. זה בגד עם רגש, עם אהבה — ואנחנו כאן שתמצאי את שלך.</p>
+          <h2>{t["home.bras.title"]}</h2>
+          <p>{t["home.bras.text"]}</p>
         </div>
-        <Carousel>
-          {brasSubs.map((s) => (
-            <CategoryTile key={s.id} name={s.name} href="/c/bras" />
-          ))}
-        </Carousel>
+        <Carousel>{tiles(bras)}</Carousel>
         <div className="s-cta">
           <Link className="btn-v" href="/c/bras">
             לכל החזיות
@@ -79,8 +58,8 @@ export default async function HomePage() {
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="qteaser">
-          <h2>שאלון התאמת חזייה</h2>
-          <p>שיטה ייחודית להתאמת חזייה ע״י שאלון מרחוק — למי שלא יודעת מה נכון לה.</p>
+          <h2>{t["home.quiz.title"]}</h2>
+          <p>{t["home.quiz.text"]}</p>
           <Link className="btn" href="/quiz">
             לשאלון
           </Link>
@@ -89,15 +68,11 @@ export default async function HomePage() {
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="s-intro">
-          <h2>הלבשה תחתונה</h2>
+          <h2>{t["home.under.title"]}</h2>
         </div>
-        <Carousel>
-          {underSubs.map((s) => (
-            <CategoryTile key={s.id} name={s.name} href="/c/under" />
-          ))}
-        </Carousel>
+        <Carousel>{tiles(under)}</Carousel>
         <div className="s-cta">
-          <Link className="btn-o" href="/c/under">
+          <Link className="btn-o" href="/c/under" style={{ color: "var(--violet)" }}>
             לכל הפריטים
           </Link>
         </div>
@@ -105,8 +80,8 @@ export default async function HomePage() {
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="s-intro">
-          <h2>תחתוני מחזור</h2>
-          <p>ספיגה מדורגת, כותנה נעימה, בלי תחושת מוצר רפואי — ליום שלם בלי לחשוב על זה פעם נוספת.</p>
+          <h2>{t["home.period.title"]}</h2>
+          <p>{t["home.period.text"]}</p>
         </div>
         <div className="s-cta">
           <Link className="btn-v" href="/c/period">
@@ -117,15 +92,11 @@ export default async function HomePage() {
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="s-intro">
-          <h2>ביגוד</h2>
+          <h2>{t["home.cloth.title"]}</h2>
         </div>
-        <Carousel>
-          {clothSubs.map((s) => (
-            <CategoryTile key={s.id} name={s.name} href="/c/cloth" />
-          ))}
-        </Carousel>
+        <Carousel>{tiles(cloth)}</Carousel>
         <div className="s-cta">
-          <Link className="btn-o" href="/c/cloth">
+          <Link className="btn-o" href="/c/cloth" style={{ color: "var(--violet)" }}>
             לכל הפריטים
           </Link>
         </div>
@@ -133,20 +104,20 @@ export default async function HomePage() {
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="s-intro">
-          <h2>מעגלי החיים</h2>
-          <p>הגוף משתנה — והמלאי אצלנו מסודר לפי השלב שאת בו, לא רק לפי המידה שרשומה בתווית.</p>
+          <h2>{t["home.circles.title"]}</h2>
+          <p>{t["home.circles.text"]}</p>
         </div>
         <div className="stage-grid">
-          {stages.map((s, i) => (
-            <StageTile key={s.id} name={s.name} blurb={CIRCLES_STAGE_BLURBS[i] ?? ""} index={i} />
+          {(circles?.subcategories ?? []).map((s) => (
+            <StageTile key={s.id} name={s.name} />
           ))}
         </div>
       </section>
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="s-intro">
-          <h2>מדריכים</h2>
-          <p>מה שאנחנו מסבירות בחנות עשר פעמים ביום, כתוב — בלי מונחים מקצועיים ובלי לנסות למכור לך משהו.</p>
+          <h2>{t["home.guides.title"]}</h2>
+          <p>{t["home.guides.text"]}</p>
         </div>
         <Carousel big>
           {guides.map((g) => (
@@ -154,7 +125,7 @@ export default async function HomePage() {
           ))}
         </Carousel>
         <div className="s-cta">
-          <Link className="btn-o" href="/guides">
+          <Link className="btn-o" href="/guides" style={{ color: "var(--violet)" }}>
             לכל המדריכים
           </Link>
         </div>
@@ -162,8 +133,8 @@ export default async function HomePage() {
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="s-intro">
-          <h2>הסיפור של פרפר סגול</h2>
-          <p>למה פתחנו את החנות, ולמה אנחנו עדיין מאמינות שמדידה טובה שווה יותר מכל מבצע.</p>
+          <h2>{t["home.story.title"]}</h2>
+          <p>{t["home.story.text"]}</p>
         </div>
         <div className="story-btns">
           <Link className="story-btn" href="/about">

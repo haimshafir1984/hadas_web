@@ -21,6 +21,7 @@ export type ProductFormValue = {
   outOfStockSizes: string[];
   gradientIndex: number;
   imageUrls: string[];
+  extraCategoryIds: string[];
 };
 
 export default function ProductForm({
@@ -118,6 +119,33 @@ export default function ProductForm({
               </option>
             ))}
           </select>
+        </div>
+        <div className="fld full">
+          <label>
+            מופיע גם בקטגוריות <span className="hint">(מעבר לקטגוריה הראשית)</span>
+          </label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {categories
+              .filter((c) => c.id !== value.categoryId)
+              .map((c) => {
+                const on = value.extraCategoryIds.includes(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`fchip ${on ? "on" : ""}`}
+                    onClick={() =>
+                      setValue((cur) => ({
+                        ...cur,
+                        extraCategoryIds: on ? cur.extraCategoryIds.filter((x) => x !== c.id) : [...cur.extraCategoryIds, c.id],
+                      }))
+                    }
+                  >
+                    {c.name}
+                  </button>
+                );
+              })}
+          </div>
         </div>
         <div className="fld">
           <label>תת-קטגוריה</label>

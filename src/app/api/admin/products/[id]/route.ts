@@ -22,6 +22,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       outOfStockSizes: Array.isArray(body.outOfStockSizes) ? body.outOfStockSizes : [],
       badge: body.badge || null,
       gradientIndex: Number.isFinite(Number(body.gradientIndex)) ? Number(body.gradientIndex) : 0,
+      extraCategories: {
+        set: (Array.isArray(body.extraCategoryIds) ? (body.extraCategoryIds as string[]) : [])
+          .filter((cid) => cid !== body.categoryId)
+          .map((cid) => ({ id: cid })),
+      },
     },
   });
 

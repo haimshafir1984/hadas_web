@@ -1,16 +1,11 @@
 import Link from "next/link";
-import { GRAD } from "@/lib/format";
-import { StageGlyph } from "./icons";
+import LineIcon from "./LineIcon";
 
-export default function StageTile({ name, blurb, index }: { name: string; blurb: string; index: number }) {
-  const [from, to] = GRAD[index % GRAD.length];
+export default function StageTile({ name }: { name: string }) {
   return (
-    <Link className="stage-card" href={`/c/circles`}>
-      <div className="sph" style={{ background: `linear-gradient(140deg, ${from}, ${to})` }}>
-        <StageGlyph />
-      </div>
+    <Link className="stage-card" href="/c/circles">
+      <LineIcon name={name} size={44} />
       <h4>{name}</h4>
-      <span>{blurb}</span>
     </Link>
   );
 }

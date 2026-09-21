@@ -7,7 +7,6 @@ export type SettingsValue = {
   storeName: string;
   phone: string;
   address: string;
-  tickerHtml: string;
   shippingCost: number;
   freeShippingOver: number;
 };
@@ -43,12 +42,6 @@ export default function SettingsForm({ initial }: { initial: SettingsValue }) {
         <div className="fld full">
           <label>כתובת</label>
           <input value={value.address} onChange={(e) => set("address", e.target.value)} />
-        </div>
-        <div className="fld full">
-          <label>
-            רצועת הודעה עליונה <span className="hint">(אפשר להשתמש ב-&lt;b&gt; להדגשה)</span>
-          </label>
-          <textarea value={value.tickerHtml} onChange={(e) => set("tickerHtml", e.target.value)} />
         </div>
         <div className="fld">
           <label>דמי משלוח (₪)</label>

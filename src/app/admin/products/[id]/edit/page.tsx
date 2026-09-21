@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [product, categories] = await Promise.all([
-    prisma.product.findUnique({ where: { id }, include: { images: { orderBy: { order: "asc" } } } }),
+    prisma.product.findUnique({ where: { id }, include: { images: { orderBy: { order: "asc" } }, extraCategories: { select: { id: true } } } }),
     prisma.category.findMany({ orderBy: { order: "asc" }, include: { subcategories: { orderBy: { order: "asc" } } } }),
   ]);
   if (!product) notFound();
@@ -54,6 +54,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           outOfStockSizes: product.outOfStockSizes,
           gradientIndex: product.gradientIndex,
           imageUrls: product.images.map((i) => i.url),
+          extraCategoryIds: product.extraCategories.map((c) => c.id),
         }}
       />
     </AdminShell>

@@ -128,7 +128,7 @@ export default function ProductDetail({
 
           <div className="lbl">
             <span>מידה</span>
-            <Link href="/guides">מדריך מידות ←</Link>
+            <Link href="/size-guide">מדריך מידות ←</Link>
           </div>
           <div className="sizes">
             {product.sizes.map((s) => {

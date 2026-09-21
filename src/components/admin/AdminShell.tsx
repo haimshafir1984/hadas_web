@@ -6,6 +6,7 @@ const NAV = [
   { href: "/admin", label: "סקירה", d: "M4 13h7V4H4zM13 8h7V4h-7zM13 20h7v-9h-7zM4 20h7v-5H4z" },
   { href: "/admin/products", label: "מוצרים", d: "M4 8l8-4 8 4-8 4zM4 8v8l8 4 8-4V8" },
   { href: "/admin/cats", label: "קטגוריות", d: "M4 6h16M4 12h16M4 18h10" },
+  { href: "/admin/texts", label: "טקסטים", d: "M5 6h14M5 12h14M5 18h9" },
   { href: "/admin/orders", label: "הזמנות", d: "M6 4h12l1 16H5zM9 8h6" },
   { href: "/admin/settings", label: "הגדרות", d: "M12 8a4 4 0 100 8 4 4 0 000-8zM3 12h3M18 12h3M12 3v3M12 18v3" },
 ];

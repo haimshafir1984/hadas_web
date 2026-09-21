@@ -73,6 +73,7 @@ export default async function CategoryView({ catId, subId }: { catId: string; su
   });
   if (!category) notFound();
 
+  const inCategory = { OR: [{ categoryId: catId }, { extraCategories: { some: { id: catId } } }] };
   const isCircles = catId === "circles";
   let products;
   if (isCircles) {
@@ -82,14 +83,14 @@ export default async function CategoryView({ catId, subId }: { catId: string; su
     });
   } else if (subId) {
     const filtered = await prisma.product.findMany({
-      where: { categoryId: catId, subcategoryId: subId },
+      where: { subcategoryId: subId },
       include,
     });
     products = filtered.length
       ? filtered
-      : await prisma.product.findMany({ where: { categoryId: catId }, include });
+      : await prisma.product.findMany({ where: inCategory, include });
   } else {
-    products = await prisma.product.findMany({ where: { categoryId: catId }, include });
+    products = await prisma.product.findMany({ where: inCategory, include });
   }
 
   const activeSub = subId ? category.subcategories.find((s) => s.id === subId) : undefined;

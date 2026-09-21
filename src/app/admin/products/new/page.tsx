@@ -36,6 +36,7 @@ export default async function NewProductPage() {
           outOfStockSizes: [],
           gradientIndex: 0,
           imageUrls: [],
+          extraCategoryIds: [],
         }}
       />
     </AdminShell>

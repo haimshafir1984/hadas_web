@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminCategoriesPage() {
   const categories = await prisma.category.findMany({
     orderBy: { order: "asc" },
-    include: { subcategories: true, products: { select: { id: true } } },
+    include: { subcategories: true, products: { select: { id: true } }, extraProducts: { select: { id: true } } },
   });
 
   return (
@@ -34,7 +34,7 @@ export default async function AdminCategoriesPage() {
                   <td style={{ fontWeight: 600 }}>{c.name}</td>
                   <td style={{ color: "var(--ink-2)", fontSize: 13 }}>{c.id}</td>
                   <td>{c.subcategories.length}</td>
-                  <td>{c.products.length}</td>
+                  <td>{c.products.length + c.extraProducts.length}</td>
                   <td style={{ whiteSpace: "nowrap" }}>
                     <Link className="mini" href={`/admin/cats/${c.id}`}>
                       עריכה

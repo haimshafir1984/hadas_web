@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+function extraIds(body: { extraCategoryIds?: unknown; categoryId?: string }): string[] {
+  const ids = Array.isArray(body.extraCategoryIds) ? (body.extraCategoryIds as string[]) : [];
+  return ids.filter((id) => id !== body.categoryId);
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body?.name) return NextResponse.json({ error: "נא להזין שם מוצר" }, { status: 400 });
@@ -20,6 +25,7 @@ export async function POST(req: NextRequest) {
       outOfStockSizes: Array.isArray(body.outOfStockSizes) ? body.outOfStockSizes : [],
       badge: body.badge || null,
       gradientIndex: Number.isFinite(Number(body.gradientIndex)) ? Number(body.gradientIndex) : 0,
+      extraCategories: { connect: extraIds(body).map((id) => ({ id })) },
       images: body.imageUrls?.length
         ? { create: body.imageUrls.map((url: string, order: number) => ({ url, order })) }
         : undefined,
