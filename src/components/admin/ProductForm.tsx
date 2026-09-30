@@ -50,6 +50,7 @@ export default function ProductForm({
   const isNew = !initial.id;
   const [value, setValue] = useState(initial);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
 
   const activeCategory = useMemo(() => categories.find((c) => c.id === value.categoryId), [categories, value.categoryId]);
@@ -87,16 +88,23 @@ export default function ProductForm({
   const onFilesChosen = async (files: FileList | null) => {
     if (!files || !files.length) return;
     setUploading(true);
+    setUploadError("");
     try {
       const form = new FormData();
       Array.from(files).forEach((f) => form.append("file", f));
       const res = await fetch("/api/admin/upload", { method: "POST", body: form });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.urls) {
         setValue((cur) => ({ ...cur, imageUrls: [...cur.imageUrls, ...data.urls] }));
       } else {
-        alert(data.error ?? "העלאה נכשלה");
+        const message = data.error ?? "העלאת התמונה נכשלה";
+        setUploadError(message);
+        alert(message);
       }
+    } catch {
+      const message = "לא ניתן להתחבר לשירות התמונות. נסי שוב.";
+      setUploadError(message);
+      alert(message);
     } finally {
       setUploading(false);
       if (fileInput.current) fileInput.current.value = "";
@@ -232,6 +240,7 @@ export default function ProductForm({
             />
             <div style={{ marginTop: 6 }}>{uploading ? "מעלה…" : "גרירה או בחירת קבצים — עד 8MB לתמונה"}</div>
           </div>
+          {uploadError && <div className="err" style={{ marginTop: 8 }}>{uploadError}</div>}
           {value.imageUrls.length > 0 && (
             <div className="upload-thumbs">
               {value.imageUrls.map((url) => (
@@ -308,15 +317,17 @@ export default function ProductForm({
                   <strong>קאפ</strong>
                   <div className="bra-size-options">
                     {BRA_CUPS.map((cup) => (
-                      <button
+                      <label
                         key={cup}
-                        type="button"
                         className={`bra-size-option ${selectedBraParts.cups.has(cup) ? "on" : ""}`}
-                        aria-pressed={selectedBraParts.cups.has(cup)}
-                        onClick={() => toggleBraPart("cup", cup)}
                       >
-                        {cup}
-                      </button>
+                        <input
+                          type="checkbox"
+                          checked={selectedBraParts.cups.has(cup)}
+                          onChange={() => toggleBraPart("cup", cup)}
+                        />
+                        <span>{cup}</span>
+                      </label>
                     ))}
                   </div>
                 </div>
@@ -324,15 +335,17 @@ export default function ProductForm({
                   <strong>היקף</strong>
                   <div className="bra-size-options">
                     {BRA_BANDS.map((band) => (
-                      <button
+                      <label
                         key={band}
-                        type="button"
                         className={`bra-size-option ${selectedBraParts.bands.has(band) ? "on" : ""}`}
-                        aria-pressed={selectedBraParts.bands.has(band)}
-                        onClick={() => toggleBraPart("band", band)}
                       >
-                        {band}
-                      </button>
+                        <input
+                          type="checkbox"
+                          checked={selectedBraParts.bands.has(band)}
+                          onChange={() => toggleBraPart("band", band)}
+                        />
+                        <span>{band}</span>
+                      </label>
                     ))}
                   </div>
                 </div>

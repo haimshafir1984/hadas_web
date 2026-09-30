@@ -1940,6 +1940,9 @@ footer a:hover {
   flex-wrap: wrap;
 }
 .bra-size-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 42px;
   min-height: 36px;
   padding: 7px 10px;
@@ -1949,6 +1952,11 @@ footer a:hover {
   color: var(--ink);
   font-weight: 700;
   cursor: pointer;
+}
+.bra-size-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 .bra-size-option:hover {
   border-color: var(--violet-2);
