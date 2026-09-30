@@ -1907,6 +1907,80 @@ footer a:hover {
   border-color: var(--violet);
 }
 
+.bra-size-picker {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+.bra-size-help {
+  padding: 11px 13px;
+  color: var(--ink-2);
+  font-size: 13px;
+  border-bottom: 1px solid var(--line);
+}
+.bra-size-table-row {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 12px 13px;
+  border-bottom: 1px solid var(--line);
+}
+.bra-size-table-head {
+  padding-block: 8px;
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+}
+.bra-size-options {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.bra-size-option {
+  min-width: 42px;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+}
+.bra-size-option:hover {
+  border-color: var(--violet-2);
+}
+.bra-size-option.on {
+  border-color: var(--violet);
+  background: var(--violet);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(109, 46, 158, 0.18);
+}
+.bra-size-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 13px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.bra-size-result-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.bra-size-result-list span {
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+
 .upload-drop {
   border: 2px dashed var(--line);
   border-radius: 12px;

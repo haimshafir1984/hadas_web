@@ -5,6 +5,21 @@ import { useRouter } from "next/navigation";
 import { GRAD, PALETTE, SIZE_KITS } from "@/lib/format";
 import type { NavCategory } from "@/lib/types";
 
+const BRA_BANDS = ["65", "70", "75", "80", "85", "90", "95", "100", "105", "110"];
+const BRA_CUPS = ["A", "B", "C", "D", "DD"];
+
+function braParts(sizes: string[]) {
+  const bands = new Set<string>();
+  const cups = new Set<string>();
+  sizes.forEach((size) => {
+    const match = size.replace(/\s+/g, "").match(/^(\d+)([A-Za-z]+)$/);
+    if (!match) return;
+    bands.add(match[1]);
+    cups.add(match[2].toUpperCase());
+  });
+  return { bands, cups };
+}
+
 export type ProductFormValue = {
   id?: string;
   name: string;
@@ -38,6 +53,8 @@ export default function ProductForm({
   const fileInput = useRef<HTMLInputElement>(null);
 
   const activeCategory = useMemo(() => categories.find((c) => c.id === value.categoryId), [categories, value.categoryId]);
+  const isBra = value.categoryId === "bras";
+  const selectedBraParts = useMemo(() => braParts(value.sizes), [value.sizes]);
 
   const set = <K extends keyof ProductFormValue>(key: K, v: ProductFormValue[K]) =>
     setValue((cur) => ({ ...cur, [key]: v }));
@@ -47,6 +64,25 @@ export default function ProductForm({
       ...cur,
       colors: cur.colors.includes(c) ? cur.colors.filter((x) => x !== c) : [...cur.colors, c],
     }));
+
+  const toggleBraPart = (part: "band" | "cup", option: string) => {
+    setValue((cur) => {
+      const { bands, cups } = braParts(cur.sizes);
+      const selected = part === "band" ? bands : cups;
+      if (selected.has(option)) selected.delete(option);
+      else selected.add(option);
+
+      const sizes = BRA_BANDS.filter((band) => bands.has(band)).flatMap((band) =>
+        BRA_CUPS.filter((cup) => cups.has(cup)).map((cup) => `${band}${cup}`),
+      );
+
+      return {
+        ...cur,
+        sizes,
+        outOfStockSizes: cur.outOfStockSizes.filter((size) => sizes.includes(size)),
+      };
+    });
+  };
 
   const onFilesChosen = async (files: FileList | null) => {
     if (!files || !files.length) return;
@@ -259,20 +295,76 @@ export default function ProductForm({
           </div>
         </div>
         <div className="fld full">
-          <label>
-            מידות <span className="hint">(מופרדות בפסיק)</span>
-          </label>
-          <div className="rowin">
-            <input
-              value={value.sizes.join(",")}
-              onChange={(e) => set("sizes", e.target.value.split(",").map((x) => x.trim()).filter(Boolean))}
-            />
-            {Object.keys(SIZE_KITS).map((k) => (
-              <button key={k} type="button" className="mini" onClick={() => set("sizes", SIZE_KITS[k].split(","))}>
-                {k}
-              </button>
-            ))}
-          </div>
+          <label>מידות</label>
+          {isBra ? (
+            <div className="bra-size-picker">
+              <div className="bra-size-help">סמני את ההיקפים ואת הקאפיות. המערכת תיצור אוטומטית את כל השילובים.</div>
+              <div className="bra-size-table">
+                <div className="bra-size-table-row bra-size-table-head">
+                  <span>סוג מידה</span>
+                  <span>בחירה</span>
+                </div>
+                <div className="bra-size-table-row">
+                  <strong>קאפ</strong>
+                  <div className="bra-size-options">
+                    {BRA_CUPS.map((cup) => (
+                      <button
+                        key={cup}
+                        type="button"
+                        className={`bra-size-option ${selectedBraParts.cups.has(cup) ? "on" : ""}`}
+                        aria-pressed={selectedBraParts.cups.has(cup)}
+                        onClick={() => toggleBraPart("cup", cup)}
+                      >
+                        {cup}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="bra-size-table-row">
+                  <strong>היקף</strong>
+                  <div className="bra-size-options">
+                    {BRA_BANDS.map((band) => (
+                      <button
+                        key={band}
+                        type="button"
+                        className={`bra-size-option ${selectedBraParts.bands.has(band) ? "on" : ""}`}
+                        aria-pressed={selectedBraParts.bands.has(band)}
+                        onClick={() => toggleBraPart("band", band)}
+                      >
+                        {band}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="bra-size-result">
+                <span>מידות שייווצרו:</span>
+                {value.sizes.length ? (
+                  <div className="bra-size-result-list">
+                    {value.sizes.map((size) => (
+                      <span key={size}>{size}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="hint">בחרי לפחות היקף וקאפ אחד</span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="rowin">
+                <input
+                  value={value.sizes.join(",")}
+                  onChange={(e) => set("sizes", e.target.value.split(",").map((x) => x.trim()).filter(Boolean))}
+                />
+                {Object.keys(SIZE_KITS).map((k) => (
+                  <button key={k} type="button" className="mini" onClick={() => set("sizes", SIZE_KITS[k].split(","))}>
+                    {k}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
         <div className="fld full">
           <label>
