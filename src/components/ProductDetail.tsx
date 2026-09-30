@@ -84,7 +84,7 @@ export default function ProductDetail({
           <ProductPh id={product.id} name={product.name} gradientIndex={product.gradientIndex} imageUrl={image} />
           <ProductPh id={product.id} name={product.name} gradientIndex={product.gradientIndex} imageUrl={image} />
         </div>
-        <div>
+        <div className="pdp-info">
           <div style={{ fontSize: 13, color: "var(--ink-2)", fontWeight: 500 }}>{product.categoryName}</div>
           <h1>{product.name}</h1>
           {product.ratingCount ? (

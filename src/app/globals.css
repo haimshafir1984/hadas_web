@@ -989,6 +989,18 @@ section.section {
   align-items: start;
   padding-block: 8px;
 }
+/* Grid items default to min-width:auto, so their automatic minimum size is
+   based on content - including the .tabs row's white-space:nowrap buttons
+   ("משלוח והחזרה" etc.), whose combined width becomes a hard floor for this
+   whole column even though .tabs itself scrolls internally. That floor was
+   wider than the mobile viewport, pushing the whole page out of view on
+   product pages only. min-width: 0 lets the grid track (and this column's
+   own overflow-x:auto tab bar) shrink to the space actually available. */
+.pdp .gal,
+.pdp-info,
+.tabs {
+  min-width: 0;
+}
 @media (max-width: 860px) {
   .pdp {
     grid-template-columns: 1fr;
