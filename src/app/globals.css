@@ -879,7 +879,10 @@ section.section {
 }
 .category-page-modern .grid {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  /* auto-fill (not auto-fit): leaves empty tracks instead of stretching the
+     real cards to fill the row when there are only 1-2 products — otherwise
+     a 2-product result blows each card up to half the screen width. */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
   gap: 22px;
   padding: 24px 12px 70px !important;
 }
