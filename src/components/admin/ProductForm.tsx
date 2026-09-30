@@ -55,7 +55,16 @@ export default function ProductForm({
 
   const activeCategory = useMemo(() => categories.find((c) => c.id === value.categoryId), [categories, value.categoryId]);
   const isBra = value.categoryId === "bras";
-  const selectedBraParts = useMemo(() => braParts(value.sizes), [value.sizes]);
+
+  // Tracked separately from `value.sizes` on purpose: a lone band or lone cup
+  // produces zero band×cup combinations, so if "checked" were derived back
+  // from `sizes` every single-dimension click would immediately look
+  // unchecked again (nothing to reconstruct it from) until both a band and a
+  // cup happened to be selected at once, which isn't reachable by clicking
+  // one checkbox at a time. These two sets are the source of truth for what
+  // the picker shows as checked; `sizes` is only ever computed *from* them.
+  const [braBands, setBraBands] = useState<Set<string>>(() => braParts(initial.sizes).bands);
+  const [braCups, setBraCups] = useState<Set<string>>(() => braParts(initial.sizes).cups);
 
   const set = <K extends keyof ProductFormValue>(key: K, v: ProductFormValue[K]) =>
     setValue((cur) => ({ ...cur, [key]: v }));
@@ -67,22 +76,22 @@ export default function ProductForm({
     }));
 
   const toggleBraPart = (part: "band" | "cup", option: string, checked: boolean) => {
-    setValue((cur) => {
-      const { bands, cups } = braParts(cur.sizes);
-      const selected = part === "band" ? bands : cups;
-      if (checked) selected.add(option);
-      else selected.delete(option);
+    const bands = new Set(braBands);
+    const cups = new Set(braCups);
+    const target = part === "band" ? bands : cups;
+    if (checked) target.add(option);
+    else target.delete(option);
+    setBraBands(bands);
+    setBraCups(cups);
 
-      const sizes = BRA_BANDS.filter((band) => bands.has(band)).flatMap((band) =>
-        BRA_CUPS.filter((cup) => cups.has(cup)).map((cup) => `${band}${cup}`),
-      );
-
-      return {
-        ...cur,
-        sizes,
-        outOfStockSizes: cur.outOfStockSizes.filter((size) => sizes.includes(size)),
-      };
-    });
+    const sizes = BRA_BANDS.filter((band) => bands.has(band)).flatMap((band) =>
+      BRA_CUPS.filter((cup) => cups.has(cup)).map((cup) => `${band}${cup}`),
+    );
+    setValue((cur) => ({
+      ...cur,
+      sizes,
+      outOfStockSizes: cur.outOfStockSizes.filter((size) => sizes.includes(size)),
+    }));
   };
 
   const onFilesChosen = async (files: FileList | null) => {
@@ -319,12 +328,12 @@ export default function ProductForm({
                     {BRA_CUPS.map((cup) => (
                       <label
                         key={cup}
-                        className={`bra-size-option ${selectedBraParts.cups.has(cup) ? "on" : ""}`}
+                        className={`bra-size-option ${braCups.has(cup) ? "on" : ""}`}
                       >
                         <input
                           type="checkbox"
                           className="bra-size-checkbox"
-                          checked={selectedBraParts.cups.has(cup)}
+                          checked={braCups.has(cup)}
                           onChange={(event) => toggleBraPart("cup", cup, event.target.checked)}
                         />
                         <span>{cup}</span>
@@ -338,12 +347,12 @@ export default function ProductForm({
                     {BRA_BANDS.map((band) => (
                       <label
                         key={band}
-                        className={`bra-size-option ${selectedBraParts.bands.has(band) ? "on" : ""}`}
+                        className={`bra-size-option ${braBands.has(band) ? "on" : ""}`}
                       >
                         <input
                           type="checkbox"
                           className="bra-size-checkbox"
-                          checked={selectedBraParts.bands.has(band)}
+                          checked={braBands.has(band)}
                           onChange={(event) => toggleBraPart("band", band, event.target.checked)}
                         />
                         <span>{band}</span>
