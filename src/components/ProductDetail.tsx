@@ -7,6 +7,7 @@ import { useToast } from "@/lib/toast-context";
 import { discountPct, nis } from "@/lib/format";
 import ProductPh from "./ProductPh";
 import ProductCard from "./ProductCard";
+import TiltCard from "./TiltCard";
 import { BraSizeTable, ClothingSizeTable } from "./SizeCharts";
 import { CheckIcon } from "./icons";
 import type { ProductCardData } from "@/lib/types";
@@ -77,7 +78,9 @@ export default function ProductDetail({
       </div>
       <div className="pdp">
         <div className="gal">
-          <ProductPh id={product.id} name={product.name} gradientIndex={product.gradientIndex} imageUrl={image} />
+          <TiltCard className="tilt-hero">
+            <ProductPh id={product.id} name={product.name} gradientIndex={product.gradientIndex} imageUrl={image} />
+          </TiltCard>
           <ProductPh id={product.id} name={product.name} gradientIndex={product.gradientIndex} imageUrl={image} />
           <ProductPh id={product.id} name={product.name} gradientIndex={product.gradientIndex} imageUrl={image} />
         </div>

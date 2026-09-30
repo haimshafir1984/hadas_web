@@ -1005,6 +1005,30 @@ section.section {
   grid-column: 1/-1;
   aspect-ratio: 4/3;
 }
+.gal .tilt-hero {
+  grid-column: 1/-1;
+}
+.gal .tilt-hero .ph {
+  aspect-ratio: 4/3;
+}
+
+/* Floating-card tilt effect for the main product photo (see TiltCard.tsx). */
+.tilt-card {
+  --tilt-shadow-x: 0px;
+  --tilt-shadow-y: 18px;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+.tilt-card .ph {
+  box-shadow: var(--tilt-shadow-x) var(--tilt-shadow-y) 32px rgba(45, 20, 70, 0.18);
+  transition: box-shadow 0.15s ease-out;
+}
+@media (pointer: fine) {
+  .tilt-card:hover {
+    cursor: grab;
+  }
+}
 .pdp h1 {
   font-size: clamp(24px, 3.4vw, 34px);
 }
