@@ -11,9 +11,38 @@ const ALLOWED_TYPES: Record<string, string> = {
 };
 const MAX_BYTES = 8 * 1024 * 1024;
 
-// Local disk storage under /public/uploads for the prototype-to-production
-// cutover. Swap this route for an S3/Cloudinary upload later — everything
-// that calls it just expects back a public image URL string.
+const SUPABASE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || "product-images";
+
+async function uploadToSupabase(file: File, filename: string, buffer: Buffer) {
+  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error("Supabase Storage לא מוגדר: חסרים SUPABASE_URL או SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  const response = await fetch(
+    `${supabaseUrl}/storage/v1/object/${SUPABASE_BUCKET}/${encodeURIComponent(filename)}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": file.type,
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "x-upsert": "false",
+      },
+      body: new Uint8Array(buffer),
+    },
+  );
+
+  if (!response.ok) {
+    const details = await response.text().catch(() => "");
+    throw new Error(`Supabase Storage upload failed (${response.status}): ${details.slice(0, 300)}`);
+  }
+
+  return `${supabaseUrl}/storage/v1/object/public/${SUPABASE_BUCKET}/${encodeURIComponent(filename)}`;
+}
+
 export async function POST(req: NextRequest) {
   const form = await req.formData().catch(() => null);
   if (!form) return NextResponse.json({ error: "בקשה לא תקינה" }, { status: 400 });
@@ -21,8 +50,9 @@ export async function POST(req: NextRequest) {
   const files = form.getAll("file").filter((f): f is File => f instanceof File);
   if (!files.length) return NextResponse.json({ error: "לא נבחר קובץ" }, { status: 400 });
 
+  const useLocalStorage = process.env.NODE_ENV !== "production" && !process.env.SUPABASE_SERVICE_ROLE_KEY;
   const uploadsDir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(uploadsDir, { recursive: true });
+  if (useLocalStorage) await mkdir(uploadsDir, { recursive: true });
 
   const urls: string[] = [];
   for (const file of files) {
@@ -32,8 +62,12 @@ export async function POST(req: NextRequest) {
 
     const filename = `${randomUUID()}.${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadsDir, filename), buffer);
-    urls.push(`/uploads/${filename}`);
+    if (useLocalStorage) {
+      await writeFile(path.join(uploadsDir, filename), buffer);
+      urls.push(`/uploads/${filename}`);
+    } else {
+      urls.push(await uploadToSupabase(file, filename, buffer));
+    }
   }
 
   return NextResponse.json({ urls });
