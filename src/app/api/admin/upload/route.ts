@@ -15,22 +15,32 @@ const SUPABASE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || "product-images";
 
 async function uploadToSupabase(file: File, filename: string, buffer: Buffer) {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY)
+    ?.trim()
+    .replace(/^['"]|['"]$/g, "");
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error("Supabase Storage לא מוגדר: חסרים SUPABASE_URL או SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  const authHeaders: Record<string, string> = {
+    apikey: serviceRoleKey,
+    "Content-Type": file.type,
+    "Cache-Control": "public, max-age=31536000, immutable",
+    "x-upsert": "false",
+  };
+
+  // Legacy Supabase service-role keys are JWTs. New `sb_secret_...` keys
+  // must be sent as `apikey` and must not be put in a Bearer header.
+  if (serviceRoleKey.startsWith("eyJ")) {
+    authHeaders.Authorization = `Bearer ${serviceRoleKey}`;
   }
 
   const response = await fetch(
     `${supabaseUrl}/storage/v1/object/${SUPABASE_BUCKET}/${encodeURIComponent(filename)}`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${serviceRoleKey}`,
-        "Content-Type": file.type,
-        "Cache-Control": "public, max-age=31536000, immutable",
-        "x-upsert": "false",
-      },
+      headers: authHeaders,
       body: new Uint8Array(buffer),
     },
   );

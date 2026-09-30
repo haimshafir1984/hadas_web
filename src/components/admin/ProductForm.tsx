@@ -66,12 +66,12 @@ export default function ProductForm({
       colors: cur.colors.includes(c) ? cur.colors.filter((x) => x !== c) : [...cur.colors, c],
     }));
 
-  const toggleBraPart = (part: "band" | "cup", option: string) => {
+  const toggleBraPart = (part: "band" | "cup", option: string, checked: boolean) => {
     setValue((cur) => {
       const { bands, cups } = braParts(cur.sizes);
       const selected = part === "band" ? bands : cups;
-      if (selected.has(option)) selected.delete(option);
-      else selected.add(option);
+      if (checked) selected.add(option);
+      else selected.delete(option);
 
       const sizes = BRA_BANDS.filter((band) => bands.has(band)).flatMap((band) =>
         BRA_CUPS.filter((cup) => cups.has(cup)).map((cup) => `${band}${cup}`),
@@ -323,8 +323,9 @@ export default function ProductForm({
                       >
                         <input
                           type="checkbox"
+                          className="bra-size-checkbox"
                           checked={selectedBraParts.cups.has(cup)}
-                          onChange={() => toggleBraPart("cup", cup)}
+                          onChange={(event) => toggleBraPart("cup", cup, event.target.checked)}
                         />
                         <span>{cup}</span>
                       </label>
@@ -341,8 +342,9 @@ export default function ProductForm({
                       >
                         <input
                           type="checkbox"
+                          className="bra-size-checkbox"
                           checked={selectedBraParts.bands.has(band)}
-                          onChange={() => toggleBraPart("band", band)}
+                          onChange={(event) => toggleBraPart("band", band, event.target.checked)}
                         />
                         <span>{band}</span>
                       </label>

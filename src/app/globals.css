@@ -1954,9 +1954,13 @@ footer a:hover {
   cursor: pointer;
 }
 .bra-size-option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  width: 16px;
+  height: 16px;
+  margin: 0 0 0 6px;
+  accent-color: var(--violet);
+}
+.bra-size-option.on .bra-size-checkbox {
+  accent-color: #fff;
 }
 .bra-size-option:hover {
   border-color: var(--violet-2);
