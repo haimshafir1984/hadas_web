@@ -10,7 +10,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "tsx prisma/seed.ts",
+    "gen:icons": "node scripts/gen-icons.mjs",
+    "predev": "node scripts/gen-icons.mjs",
+    "prebuild": "node scripts/gen-icons.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

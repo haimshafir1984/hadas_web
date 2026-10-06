@@ -2137,3 +2137,20 @@ footer a:hover {
     display: none;
   }
 }
+
+/* Owner-supplied icons (public/icons): recolored via mask so they match the brand. */
+.line-icon-custom {
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.c-card .cph .line-icon-custom {
+  width: 46% !important;
+  height: auto !important;
+  aspect-ratio: 1;
+}

@@ -1,3 +1,5 @@
+import { CUSTOM_ICONS } from "@/lib/custom-icons.generated";
+
 const PATHS: Record<string, string[]> = {
   wing: [
     "M24 12v26",
@@ -82,7 +84,25 @@ export function iconFor(name: string): string {
 }
 
 export default function LineIcon({ name, size = 48 }: { name: string; size?: number }) {
-  const paths = PATHS[iconFor(name)] ?? PATHS.wing;
+  const key = iconFor(name);
+  // Owner-supplied icons from public/icons (see README there): exact name wins, then built-in key.
+  const custom = CUSTOM_ICONS[name.normalize("NFC")] ?? CUSTOM_ICONS[key];
+  if (custom) {
+    // Mask => single-color artwork takes the brand color via currentColor.
+    return (
+      <span
+        className="line-icon-custom"
+        aria-hidden="true"
+        style={{
+          width: size,
+          height: size,
+          WebkitMaskImage: `url(${custom})`,
+          maskImage: `url(${custom})`,
+        }}
+      />
+    );
+  }
+  const paths = PATHS[key] ?? PATHS.wing;
   return (
     <svg
       className="line-icon"
