@@ -22,6 +22,7 @@ model Subcategory {
   id         String   @id @default(cuid())
   name       String
   order      Int      @default(0)
+  iconUrl    String?
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   products   Product[]

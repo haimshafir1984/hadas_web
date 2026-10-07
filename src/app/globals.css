@@ -2154,3 +2154,34 @@ footer a:hover {
   height: auto !important;
   aspect-ratio: 1;
 }
+
+/* admin: subcategory rows with icon upload */
+.sub-rows {
+  display: grid;
+  gap: 8px;
+}
+.sub-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+}
+.sub-row-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--bg-2);
+  color: var(--violet);
+  flex: none;
+}
+.sub-row-name {
+  font-weight: 600;
+  flex: 1;
+  min-width: 100px;
+}

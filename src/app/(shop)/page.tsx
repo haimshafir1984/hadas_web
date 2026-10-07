@@ -20,7 +20,7 @@ export default async function HomePage() {
   ]);
 
   const tiles = (cat: typeof bras) =>
-    (cat?.subcategories ?? []).map((s) => <CategoryTile key={s.id} name={s.name} href={`/c/${cat!.id}/${s.id}`} />);
+    (cat?.subcategories ?? []).map((s) => <CategoryTile key={s.id} name={s.name} href={`/c/${cat!.id}/${s.id}`} iconUrl={s.iconUrl} />);
 
   return (
     <div className="wrap home-page">
@@ -109,7 +109,7 @@ export default async function HomePage() {
         </div>
         <div className="stage-grid">
           {(circles?.subcategories ?? []).map((s) => (
-            <StageTile key={s.id} name={s.name} />
+            <StageTile key={s.id} name={s.name} iconUrl={s.iconUrl} />
           ))}
         </div>
       </section>

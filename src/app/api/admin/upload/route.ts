@@ -8,6 +8,7 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
   "image/gif": "gif",
+  "image/svg+xml": "svg",
 };
 const MAX_BYTES = 8 * 1024 * 1024;
 

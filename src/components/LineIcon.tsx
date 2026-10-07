@@ -83,10 +83,10 @@ export function iconFor(name: string): string {
   return "wing";
 }
 
-export default function LineIcon({ name, size = 48 }: { name: string; size?: number }) {
+export default function LineIcon({ name, size = 48, iconUrl }: { name: string; size?: number; iconUrl?: string | null }) {
   const key = iconFor(name);
-  // Owner-supplied icons from public/icons (see README there): exact name wins, then built-in key.
-  const custom = CUSTOM_ICONS[name.normalize("NFC")] ?? CUSTOM_ICONS[key];
+  // Priority: icon uploaded in admin for this subcategory > file in public/icons (exact name, then built-in key) > built-in drawing.
+  const custom = iconUrl || CUSTOM_ICONS[name.normalize("NFC")] || CUSTOM_ICONS[key];
   if (custom) {
     // Mask => single-color artwork takes the brand color via currentColor.
     return (

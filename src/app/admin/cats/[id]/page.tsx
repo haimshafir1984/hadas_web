@@ -18,7 +18,7 @@ export default async function AdminCategoryEditPage({ params }: { params: Promis
   return (
     <AdminShell active="/admin/cats" title="עריכת קטגוריה" actions={<Link className="mini" href="/admin/cats">חזרה לרשימה</Link>}>
       <CategoryEditForm categoryId={category.id} name={category.name} blurb={category.blurb ?? ""} />
-      <SubcategoryManager categoryId={category.id} subs={category.subcategories.map((s) => ({ id: s.id, name: s.name }))} />
+      <SubcategoryManager categoryId={category.id} subs={category.subcategories.map((s) => ({ id: s.id, name: s.name, iconUrl: s.iconUrl }))} />
     </AdminShell>
   );
 }
