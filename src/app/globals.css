@@ -2138,20 +2138,15 @@ footer a:hover {
   }
 }
 
-/* Owner-supplied icons (public/icons): recolored via mask so they match the brand. */
-.line-icon-custom {
-  display: inline-block;
-  background-color: currentColor;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
+/* Owner-supplied icons: shown in their own colors; multiply hides a white JPG background. */
+.line-icon-img {
+  display: block;
+  object-fit: contain;
+  mix-blend-mode: multiply;
 }
-.c-card .cph .line-icon-custom {
-  width: 46% !important;
-  height: auto !important;
+.c-card .cph .line-icon-img {
+  width: 72%;
+  height: auto;
   aspect-ratio: 1;
 }
 

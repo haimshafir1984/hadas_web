@@ -88,18 +88,10 @@ export default function LineIcon({ name, size = 48, iconUrl }: { name: string; s
   // Priority: icon uploaded in admin for this subcategory > file in public/icons (exact name, then built-in key) > built-in drawing.
   const custom = iconUrl || CUSTOM_ICONS[name.normalize("NFC")] || CUSTOM_ICONS[key];
   if (custom) {
-    // Mask => single-color artwork takes the brand color via currentColor.
+    // Shown with its own colors. mix-blend-mode: multiply makes a white background (e.g. a JPG) vanish.
     return (
-      <span
-        className="line-icon-custom"
-        aria-hidden="true"
-        style={{
-          width: size,
-          height: size,
-          WebkitMaskImage: `url(${custom})`,
-          maskImage: `url(${custom})`,
-        }}
-      />
+      // eslint-disable-next-line @next/next/no-img-element
+      <img className="line-icon-img" src={custom} alt="" width={size} height={size} aria-hidden="true" />
     );
   }
   const paths = PATHS[key] ?? PATHS.wing;

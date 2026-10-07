@@ -79,7 +79,7 @@ export default function SubcategoryManager({ categoryId, subs }: { categoryId: s
     <div className="panel">
       <h3>תת-קטגוריות ({subs.length})</h3>
       <p style={{ color: "var(--ink-2)", fontSize: 13, margin: "0 0 12px" }}>
-        אייקון: SVG או PNG, ריבועי (96×96), צבע אחד על רקע שקוף — האתר צובע אותו בסגול. בלי העלאה מוצג האייקון ברירת המחדל.
+        אייקון: PNG או SVG ריבועי (עד 512×512) על רקע שקוף — מוצג בצבעים המקוריים שלו. אפשר גם JPG עם רקע לבן. בלי העלאה מוצג אייקון ברירת המחדל.
       </p>
       {error && <div className="err">{error}</div>}
       {subs.length ? (
