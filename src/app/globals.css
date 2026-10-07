@@ -2143,6 +2143,29 @@ footer a:hover {
   display: block;
   object-fit: contain;
   mix-blend-mode: multiply;
+  /* Soft-edged reveal, right to left (like writing Hebrew): a raster can't be
+     "drawn" stroke by stroke, so a mask sweeps across it instead. */
+  -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 60%);
+  mask-image: linear-gradient(to left, #000 40%, transparent 60%);
+  -webkit-mask-size: 250% 100%;
+  mask-size: 250% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  animation: icon-reveal 1.4s ease backwards;
+}
+.c-card:hover .line-icon-img,
+.stage-card:hover .line-icon-img {
+  animation: icon-reveal-hover 1s ease backwards;
+}
+@keyframes icon-reveal {
+  from { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
+  to { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+}
+@keyframes icon-reveal-hover {
+  from { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
+  to { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
 }
 .c-card .cph .line-icon-img {
   width: 72%;
