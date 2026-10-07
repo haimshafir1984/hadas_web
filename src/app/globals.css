@@ -2153,11 +2153,11 @@ footer a:hover {
   mask-repeat: no-repeat;
   -webkit-mask-position: 100% 0;
   mask-position: 100% 0;
-  animation: icon-reveal 1.4s ease backwards;
+  animation: icon-reveal 3s ease-in-out backwards;
 }
 .c-card:hover .line-icon-img,
 .stage-card:hover .line-icon-img {
-  animation: icon-reveal-hover 1s ease backwards;
+  animation: icon-reveal-hover 2.2s ease-in-out backwards;
 }
 @keyframes icon-reveal {
   from { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
