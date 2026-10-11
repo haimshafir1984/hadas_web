@@ -4,28 +4,37 @@ import { COLOR_NAMES, PALETTE, PALETTE_NAMES } from "@/lib/format";
 import { SIZE_SYSTEMS, getLists, type Lists } from "@/lib/import-lists";
 
 // Column order matters for the generated template. The first header is the one written; the rest are accepted aliases.
-export const COLUMNS = [
+const numbered = (key: string, title: string, n: number, width: number) =>
+  Array.from({ length: n }, (_, i) => ({ key: `${key}${i + 1}`, headers: [`${title} ${i + 1}`], width, legacy: false, optional: false }));
+
+// Template order. Multi-value fields get one dropdown column per value (categories up to 4, colors up to 8, attributes up to 4).
+// The old single "a; b" columns are still read (legacy) so earlier files keep working.
+export const COLUMNS: { key: string; headers: string[]; width: number; legacy?: boolean; optional?: boolean }[] = [
   { key: "name", headers: ["שם המוצר", "שם מוצר"], width: 28 },
   { key: "sku", headers: ["מספר דגם", "מק״ט", "מקט"], width: 14 },
-  { key: "category", headers: ["שיוך לקטגוריה", "קטגוריה", "קטגוריות"], width: 26 },
+  ...numbered("category", "קטגוריה", 4, 14),
+  { key: "category", headers: ["שיוך לקטגוריה", "קטגוריות"], width: 26, legacy: true },
   { key: "brand", headers: ["מותג"], width: 16 },
   { key: "price", headers: ["מחיר ב-₪", "מחיר"], width: 11 },
   { key: "description", headers: ["תיאור"], width: 40 },
-  { key: "colors", headers: ["צבעים"], width: 20 },
+  ...numbered("color", "צבע", 8, 11),
+  { key: "colors", headers: ["צבעים"], width: 20, legacy: true },
   { key: "sizeSystem", headers: ["סוג המידות", "סוג מידות"], width: 14 },
   { key: "fabrics", headers: ["הרכב בד"], width: 20 },
-  { key: "attributes", headers: ["מאפיינים", "תגיות סינון"], width: 24 },
+  ...numbered("attr", "מאפיין", 4, 14),
+  { key: "attributes", headers: ["מאפיינים", "תגיות סינון"], width: 24, legacy: true },
   { key: "sizes", headers: ["מידות זמינות", "מידות"], width: 30 },
   // optional extras
-  { key: "wasPrice", headers: ["מחיר לפני הנחה"], width: 14 },
-  { key: "stock", headers: ["מלאי"], width: 8 },
-  { key: "badge", headers: ["תג"], width: 12 },
-  { key: "subcategory", headers: ["תת-קטגוריה"], width: 18 },
-  { key: "outSizes", headers: ["מידות שאזלו"], width: 16 },
-  { key: "active", headers: ["פעיל"], width: 8 },
-] as const;
+  { key: "wasPrice", headers: ["מחיר לפני הנחה"], width: 14, optional: true },
+  { key: "stock", headers: ["מלאי"], width: 8, optional: true },
+  { key: "badge", headers: ["תג"], width: 12, optional: true },
+  { key: "subcategory", headers: ["תת-קטגוריה"], width: 18, optional: true },
+  { key: "outSizes", headers: ["מידות שאזלו"], width: 16, optional: true },
+  { key: "active", headers: ["פעיל"], width: 8, optional: true },
+];
+const TEMPLATE_COLS = COLUMNS.filter((c) => !c.legacy);
 
-type Key = (typeof COLUMNS)[number]["key"];
+type Key = string;
 
 const CUPS = ["A", "B", "C", "D", "DD", "E", "F"];
 const DEFAULT_STOCK = 10;
@@ -140,9 +149,10 @@ export async function parseWorkbook(buffer: Buffer): Promise<ImportRow[]> {
     const col = COLUMNS.find((c) => c.headers.some((x) => norm(x) === h));
     if (col && !colIndex.has(col.key)) colIndex.set(col.key, n);
   });
-  for (const req of ["sku", "name", "category", "price"] as Key[]) {
+  for (const req of ["sku", "name", "price"]) {
     if (!colIndex.has(req)) throw new Error(`חסרה עמודה "${COLUMNS.find((c) => c.key === req)!.headers[0]}" בשורה הראשונה`);
   }
+  if (!colIndex.has("category") && !colIndex.has("category1")) throw new Error('חסרה עמודה "קטגוריה 1" בשורה הראשונה');
 
   const lists: Lists = await getLists();
   const cats = await prisma.category.findMany({ include: { subcategories: true } });
@@ -155,6 +165,9 @@ export async function parseWorkbook(buffer: Buffer): Promise<ImportRow[]> {
     const row = ws.getRow(r);
     const get = (k: Key) => (colIndex.has(k) ? cellText(row.getCell(colIndex.get(k)!).value) : "");
     if (!COLUMNS.some((c) => get(c.key))) continue;
+    // join a legacy "a; b" column with its numbered columns
+    const multi = (legacy: string, prefix: string) =>
+      [get(legacy), ...COLUMNS.filter((c) => c.key.startsWith(prefix) && /\d$/.test(c.key)).map((c) => get(c.key))].filter(Boolean).join(";");
 
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -169,7 +182,7 @@ export async function parseWorkbook(buffer: Buffer): Promise<ImportRow[]> {
     let mainCat: (typeof cats)[number] | undefined;
     let subcategoryId: string | null = null;
     const extraIds = new Set<string>();
-    for (const tok of list(get("category"))) {
+    for (const tok of list(multi("category", "category"))) {
       const asCat = cats.find((c) => norm(c.name) === norm(tok));
       if (asCat) {
         if (!mainCat) mainCat = asCat;
@@ -215,7 +228,7 @@ export async function parseWorkbook(buffer: Buffer): Promise<ImportRow[]> {
       warnings.push(`לא הוזן מלאי — הוגדר ${DEFAULT_STOCK}`);
     }
 
-    const colorsText = get("colors");
+    const colorsText = multi("colors", "color");
     const colorRes = colorsText ? parseColors(colorsText) : { colors: ["#F4EFE9"], errors: [] as string[] };
     errors.push(...colorRes.errors);
     if (!colorsText) warnings.push("לא הוזנו צבעים — הוגדר שמנת");
@@ -223,7 +236,7 @@ export async function parseWorkbook(buffer: Buffer): Promise<ImportRow[]> {
     const brandRaw = get("brand");
     const brand = brandRaw ? checkList([brandRaw], lists.brands, "מותג", errors)[0] ?? null : null;
     const fabrics = checkList(list(get("fabrics")), lists.fabrics, "הרכב בד", errors);
-    const attributes = checkList(list(get("attributes")), lists.attributes, "מאפיין", errors);
+    const attributes = checkList(list(multi("attributes", "attr")), lists.attributes, "מאפיין", errors);
 
     // Size system decides which list the sizes must come from.
     const sysRaw = get("sizeSystem");
@@ -308,6 +321,12 @@ export async function commitRows(rows: ImportRow[]) {
   return { created, updated };
 }
 
+// values -> {key1: v1, key2: v2, ...}; anything beyond `n` is joined into the last cell with "; "
+const spread = (key: string, values: string[], n: number) =>
+  Object.fromEntries(
+    Array.from({ length: n }, (_, i) => [`${key}${i + 1}`, i === n - 1 ? values.slice(i).join("; ") : values[i] ?? ""]),
+  );
+
 const colLetter = (n: number) => {
   let s = "";
   for (let x = n; x > 0; x = Math.floor((x - 1) / 26)) s = String.fromCharCode(65 + ((x - 1) % 26)) + s;
@@ -317,12 +336,12 @@ const colLetter = (n: number) => {
 export async function buildWorkbook(mode: "template" | "export") {
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet("מוצרים", { views: [{ rightToLeft: true, state: "frozen", ySplit: 1 }] });
-  ws.columns = COLUMNS.map((c) => ({ header: c.headers[0], key: c.key, width: c.width }));
+  ws.columns = TEMPLATE_COLS.map((c) => ({ header: c.headers[0], key: c.key, width: c.width }));
   ws.getRow(1).font = { bold: true, color: { argb: "FFFFFFFF" } };
   ws.getRow(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF6D2E9E" } };
   // light hint colour on the optional columns
-  COLUMNS.forEach((c, i) => {
-    if (i >= 11) ws.getRow(1).getCell(i + 1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF9A8AB0" } };
+  TEMPLATE_COLS.forEach((c, i) => {
+    if (c.optional) ws.getRow(1).getCell(i + 1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF9A8AB0" } };
   });
 
   const lists = await getLists();
@@ -340,14 +359,14 @@ export async function buildWorkbook(mode: "template" | "export") {
       ws.addRow({
         name: p.name,
         sku: p.sku ?? "",
-        category: [p.category.name, ...p.extraCategories.map((c) => c.name)].join("; "),
+        ...spread("category", [p.category.name, ...p.extraCategories.map((c) => c.name)], 4),
         brand: p.brand ?? "",
         price: p.price,
         description: p.description ?? "",
-        colors: p.colors.map((c) => PALETTE_NAMES[c] ?? c).join("; "),
+        ...spread("color", p.colors.map((c) => PALETTE_NAMES[c] ?? c), 8),
         sizeSystem: p.sizeSystem ?? "",
         fabrics: p.fabrics.join("; "),
-        attributes: p.attributes.join("; "),
+        ...spread("attr", p.attributes, 4),
         sizes: p.sizes.join("; "),
         wasPrice: p.wasPrice ?? "",
         stock: p.stock,
@@ -361,14 +380,14 @@ export async function buildWorkbook(mode: "template" | "export") {
     ws.addRow({
       name: "חזיית דוגמה (למחוק שורה זו)",
       sku: "BR-1001",
-      category: `${cats[0]?.name ?? "חזיות"}; ${cats[0]?.subcategories[0]?.name ?? ""}`.replace(/; $/, ""),
+      ...spread("category", [cats[0]?.name ?? "חזיות", cats[0]?.subcategories[0]?.name ?? ""].filter(Boolean), 4),
       brand: lists.brands[0] ?? "",
       price: 189,
       description: "תיאור קצר של המוצר",
-      colors: "שמנת; שחור",
+      ...spread("color", ["שמנת", "שחור"], 8),
       sizeSystem: "אירופאיות",
       fabrics: lists.fabrics.slice(0, 2).join("; "),
-      attributes: lists.attributes.slice(0, 2).join("; "),
+      ...spread("attr", lists.attributes.slice(0, 2), 4),
       sizes: "70-90 B-D",
     });
   }
@@ -411,9 +430,9 @@ export async function buildWorkbook(mode: "template" | "export") {
     const len = Math.max(1, listCols[i].values.length);
     return `'רשימות'!$${colLetter(i + 1)}$2:$${colLetter(i + 1)}$${len + 1}`;
   };
-  const keyCol = (k: Key) => colLetter(COLUMNS.findIndex((c) => c.key === k) + 1);
+  const keyCol = (k: Key) => colLetter(TEMPLATE_COLS.findIndex((c) => c.key === k) + 1);
   const dv = (k: Key, formula: string, strict: boolean) => {
-    const n = COLUMNS.findIndex((c) => c.key === k) + 1;
+    const n = TEMPLATE_COLS.findIndex((c) => c.key === k) + 1;
     for (let r = 2; r <= 1000; r++) {
       ws.getCell(r, n).dataValidation = {
         type: "list",
@@ -426,11 +445,11 @@ export async function buildWorkbook(mode: "template" | "export") {
     }
   };
   // multi-value columns accept free text ("a; b"), so their dropdown is only a hint (no error)
-  dv("category", rangeOf("קטגוריות"), false);
-  dv("colors", rangeOf("צבעים"), false);
+  for (let i = 1; i <= 4; i++) dv(`category${i}`, rangeOf("קטגוריות"), true);
+  for (let i = 1; i <= 8; i++) dv(`color${i}`, rangeOf("צבעים"), true);
   dv("fabrics", rangeOf("הרכב בד"), false);
-  dv("attributes", rangeOf("מאפיינים"), false);
-  if (lists.brands.length) dv("brand", rangeOf("מותגים"), false);
+  for (let i = 1; i <= 4; i++) dv(`attr${i}`, rangeOf("מאפיינים"), true);
+  if (lists.brands.length) dv("brand", rangeOf("מותגים"), true);
   dv("sizeSystem", rangeOf("סוגי מידות"), true);
   const lookup = `'רשימות'!$${colLetter(lookupCol)}$2:$${colLetter(lookupCol + 1)}$4`;
   dv("sizes", `INDIRECT(VLOOKUP($${keyCol("sizeSystem")}2,${lookup},2,FALSE))`, false);
@@ -439,8 +458,8 @@ export async function buildWorkbook(mode: "template" | "export") {
   help.columns = [{ width: 110 }];
   [
     'שורה אחת לכל מוצר בגיליון "מוצרים". מספר דגם הוא חובה וייחודי — דגם שכבר קיים באתר יעדכן את המוצר, דגם חדש ייצור מוצר.',
-    "שיוך לקטגוריה: אפשר כמה ערכים מופרדים ב-; (הראשון הוא הקטגוריה הראשית). אפשר לכתוב גם תת-קטגוריה (למשל הנקה) והמוצר ישויך אליה.",
-    "בחירה מרובה (קטגוריות, צבעים, הרכב בד, מאפיינים): בתא נבחר ערך אחד מהרשימה — כדי להוסיף עוד, מקלידים ; ואת הערך הנוסף (הערכים חייבים להיות ברשימות).",
+    "קטגוריה 1-4: בכל תא בוחרים ערך מהתפריט (עד 4 לכל מוצר). קטגוריה 1 היא הראשית. אפשר לבחור גם תת-קטגוריה (למשל הנקה) והמוצר ישויך אליה.",
+    "צבע 1-8 ומאפיין 1-4: בכל תא בוחרים ערך אחד מהתפריט, ממלאים רק כמה שצריך. הרכב בד: אפשר כמה ערכים מופרדים ב-;.",
     "סוג המידות: אירופאיות / אמריקאיות / SML. רשימת המידות בתא 'מידות זמינות' מותאמת לסוג שנבחר.",
     "מידות זמינות: רשימה (70B; 70C), \"הכול\" לכל המידות של הסוג, או טווח כמו 70-90 B-D (אירופאי: קפיצות של 5, אמריקאי: קפיצות של 2).",
     "צבעים: " + colorNames.join(", "),
