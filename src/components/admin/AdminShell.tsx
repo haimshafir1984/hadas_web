@@ -5,6 +5,8 @@ import LogoutButton from "./LogoutButton";
 const NAV = [
   { href: "/admin", label: "סקירה", d: "M4 13h7V4H4zM13 8h7V4h-7zM13 20h7v-9h-7zM4 20h7v-5H4z" },
   { href: "/admin/products", label: "מוצרים", d: "M4 8l8-4 8 4-8 4zM4 8v8l8 4 8-4V8" },
+  { href: "/admin/import", label: "ייבוא מאקסל", d: "M12 4v10M8 10l4 4 4-4M5 19h14" },
+  { href: "/admin/import/images", label: "העלאת תמונות", d: "M4 6h16v12H4zM4 15l5-5 4 4 3-3 4 4" },
   { href: "/admin/cats", label: "קטגוריות", d: "M4 6h16M4 12h16M4 18h10" },
   { href: "/admin/texts", label: "טקסטים", d: "M5 6h14M5 12h14M5 18h9" },
   { href: "/admin/orders", label: "הזמנות", d: "M6 4h12l1 16H5zM9 8h6" },

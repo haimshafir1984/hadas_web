@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function QuizPage() {
   const products = await prisma.product.findMany({
-    where: { id: { in: QUIZ_RECOMMENDED_PRODUCT_IDS } },
+    where: { id: { in: QUIZ_RECOMMENDED_PRODUCT_IDS }, isActive: true },
     include: { subcategory: true, images: { orderBy: { order: "asc" }, take: 1 } },
   });
   const byId = new Map(products.map((p) => [p.id, p]));

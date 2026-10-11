@@ -30,6 +30,7 @@ model Subcategory {
 
 model Product {
   id              String         @id @default(cuid())
+  sku             String?        @unique
   name            String
   subtitle        String?
   categoryId      String
@@ -46,6 +47,9 @@ model Product {
   sizes           String[]
   outOfStockSizes String[]
   badge           String?
+  attributes      String[]
+  isActive        Boolean        @default(true)
+  sortOrder       Int            @default(0)
   gradientIndex   Int            @default(0)
   images          ProductImage[]
   rating          Float          @default(5)

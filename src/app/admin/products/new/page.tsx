@@ -22,6 +22,9 @@ export default async function NewProductPage() {
       <ProductForm
         categories={navCategories}
         initial={{
+          sku: "",
+          attributes: [],
+          isActive: true,
           name: "",
           categoryId: navCategories[0]?.id ?? "",
           subcategoryId: "",

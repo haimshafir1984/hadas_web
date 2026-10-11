@@ -11,10 +11,10 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     where: { id },
     include: { category: true, images: { orderBy: { order: "asc" } } },
   });
-  if (!product) notFound();
+  if (!product || !product.isActive) notFound();
 
   const relatedRaw = await prisma.product.findMany({
-    where: { categoryId: product.categoryId, id: { not: product.id } },
+    where: { categoryId: product.categoryId, id: { not: product.id }, isActive: true },
     include: { subcategory: true, images: { orderBy: { order: "asc" }, take: 1 } },
     take: 4,
   });

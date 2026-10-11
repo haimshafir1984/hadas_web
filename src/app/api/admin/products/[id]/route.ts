@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  try {
+    return await handlePut(req, ctx);
+  } catch (e) {
+    if ((e as { code?: string }).code === "P2002") return NextResponse.json({ error: "מק״ט זה כבר קיים במוצר אחר" }, { status: 409 });
+    throw e;
+  }
+}
+
+async function handlePut(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await req.json().catch(() => null);
   if (!body?.name) return NextResponse.json({ error: "נא להזין שם מוצר" }, { status: 400 });
@@ -21,6 +30,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       sizes: Array.isArray(body.sizes) && body.sizes.length ? body.sizes : ["מידה אחת"],
       outOfStockSizes: Array.isArray(body.outOfStockSizes) ? body.outOfStockSizes : [],
       badge: body.badge || null,
+      sku: body.sku ? String(body.sku).trim() : null,
+      attributes: Array.isArray(body.attributes) ? body.attributes : [],
+      isActive: body.isActive !== false,
       gradientIndex: Number.isFinite(Number(body.gradientIndex)) ? Number(body.gradientIndex) : 0,
       extraCategories: {
         set: (Array.isArray(body.extraCategoryIds) ? (body.extraCategoryIds as string[]) : [])

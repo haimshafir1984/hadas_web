@@ -22,6 +22,9 @@ function braParts(sizes: string[]) {
 
 export type ProductFormValue = {
   id?: string;
+  sku: string;
+  attributes: string[];
+  isActive: boolean;
   name: string;
   categoryId: string;
   subcategoryId: string;
@@ -216,6 +219,26 @@ export default function ProductForm({
             תג על התמונה <span className="hint">(ריק = בלי תג)</span>
           </label>
           <input value={value.badge} onChange={(e) => set("badge", e.target.value)} placeholder="רב-מכר / מבצע / חדש" />
+        </div>
+        <div className="fld">
+          <label>
+            מק״ט <span className="hint">(ייחודי; משמש לייבוא ולהעלאת תמונות)</span>
+          </label>
+          <input value={value.sku} onChange={(e) => set("sku", e.target.value)} placeholder="BR-1001" />
+        </div>
+        <div className="fld">
+          <label>
+            תגיות סינון <span className="hint">(מופרדות בפסיק, למשל: ללא חישוק, ריפוד עדין)</span>
+          </label>
+          <input
+            defaultValue={value.attributes.join(", ")}
+            onBlur={(e) => set("attributes", e.target.value.split(/[,;]/).map((x) => x.trim()).filter(Boolean))}
+          />
+        </div>
+        <div className="fld">
+          <label>
+            <input type="checkbox" checked={value.isActive} onChange={(e) => set("isActive", e.target.checked)} /> מוצג בחנות
+          </label>
         </div>
         <div className="fld">
           <label>מחיר (₪)</label>

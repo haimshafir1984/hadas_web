@@ -40,6 +40,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
         categories={navCategories}
         initial={{
           id: product.id,
+          sku: product.sku ?? "",
+          attributes: product.attributes,
+          isActive: product.isActive,
           name: product.name,
           categoryId: product.categoryId,
           subcategoryId: product.subcategoryId ?? "",

@@ -7,6 +7,15 @@ function extraIds(body: { extraCategoryIds?: unknown; categoryId?: string }): st
 }
 
 export async function POST(req: NextRequest) {
+  try {
+    return await handlePost(req);
+  } catch (e) {
+    if ((e as { code?: string }).code === "P2002") return NextResponse.json({ error: "מק״ט זה כבר קיים במוצר אחר" }, { status: 409 });
+    throw e;
+  }
+}
+
+async function handlePost(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body?.name) return NextResponse.json({ error: "נא להזין שם מוצר" }, { status: 400 });
 
@@ -24,6 +33,9 @@ export async function POST(req: NextRequest) {
       sizes: Array.isArray(body.sizes) && body.sizes.length ? body.sizes : ["מידה אחת"],
       outOfStockSizes: Array.isArray(body.outOfStockSizes) ? body.outOfStockSizes : [],
       badge: body.badge || null,
+      sku: body.sku ? String(body.sku).trim() : null,
+      attributes: Array.isArray(body.attributes) ? body.attributes : [],
+      isActive: body.isActive !== false,
       gradientIndex: Number.isFinite(Number(body.gradientIndex)) ? Number(body.gradientIndex) : 0,
       extraCategories: { connect: extraIds(body).map((id) => ({ id })) },
       images: body.imageUrls?.length
