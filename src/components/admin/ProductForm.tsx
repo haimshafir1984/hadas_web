@@ -24,6 +24,9 @@ export type ProductFormValue = {
   id?: string;
   sku: string;
   attributes: string[];
+  brand: string;
+  fabrics: string[];
+  sizeSystem: string;
   isActive: boolean;
   name: string;
   categoryId: string;
@@ -235,6 +238,19 @@ export default function ProductForm({
             מק״ט <span className="hint">(ייחודי; משמש לייבוא ולהעלאת תמונות)</span>
           </label>
           <input value={value.sku} onChange={(e) => set("sku", e.target.value)} placeholder="BR-1001" />
+        </div>
+        <div className="fld">
+          <label>מותג</label>
+          <input value={value.brand} onChange={(e) => set("brand", e.target.value)} />
+        </div>
+        <div className="fld">
+          <label>
+            הרכב בד <span className="hint">(מופרד בפסיק, למשל: כותנה, אלסטן)</span>
+          </label>
+          <input
+            defaultValue={value.fabrics.join(", ")}
+            onBlur={(e) => set("fabrics", e.target.value.split(/[,;]/).map((x) => x.trim()).filter(Boolean))}
+          />
         </div>
         <div className="fld">
           <label>

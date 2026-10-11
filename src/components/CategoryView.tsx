@@ -42,8 +42,10 @@ type ViewQuery = { f?: string; sort?: string };
 
 const SORTS: Record<string, string> = { new: "חדשים", "price-asc": "מחיר: מהנמוך לגבוה", "price-desc": "מחיר: מהגבוה לנמוך" };
 
-function applyView<T extends { price: number; createdAt: Date; attributes: string[] }>(items: T[], q: ViewQuery) {
-  let out = q.f ? items.filter((p) => p.attributes.includes(q.f!)) : items;
+const tagsOf = (p: { attributes: string[]; brand: string | null; fabrics: string[] }) => [...p.attributes, ...(p.brand ? [p.brand] : []), ...p.fabrics];
+
+function applyView<T extends { price: number; createdAt: Date; attributes: string[]; brand: string | null; fabrics: string[] }>(items: T[], q: ViewQuery) {
+  let out = q.f ? items.filter((p) => tagsOf(p).includes(q.f!)) : items;
   if (q.sort === "price-asc") out = [...out].sort((a, b) => a.price - b.price);
   else if (q.sort === "price-desc") out = [...out].sort((a, b) => b.price - a.price);
   else if (q.sort === "new") out = [...out].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -131,7 +133,7 @@ export default async function CategoryView({ catId, subId, query = {} }: { catId
     allProducts = await prisma.product.findMany({ where: inCategory, include, orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }] });
   }
 
-  const filterOptions = Array.from(new Set(allProducts.flatMap((p) => p.attributes))).sort();
+  const filterOptions = Array.from(new Set(allProducts.flatMap((p) => tagsOf(p)))).sort();
   const products = applyView(allProducts, query);
   const base = subId ? `/c/${category.id}/${subId}` : `/c/${category.id}`;
   const activeSub = subId ? category.subcategories.find((s) => s.id === subId) : undefined;

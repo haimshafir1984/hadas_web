@@ -23,6 +23,9 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       outOfStockSizes: p.outOfStockSizes,
       badge: p.badge,
       attributes: p.attributes,
+      brand: p.brand,
+      fabrics: p.fabrics,
+      sizeSystem: p.sizeSystem,
       isActive: false, // a copy starts hidden until it is edited
       sortOrder: p.sortOrder,
       gradientIndex: p.gradientIndex,

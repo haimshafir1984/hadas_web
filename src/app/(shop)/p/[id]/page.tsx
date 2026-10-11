@@ -51,6 +51,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         ratingCount: product.ratingCount,
         stock: product.stock,
         description: product.description,
+        brand: product.brand,
+        fabrics: product.fabrics,
         features: product.features,
         colors: product.colors,
         sizes: product.sizes,

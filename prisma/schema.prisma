@@ -48,6 +48,9 @@ model Product {
   outOfStockSizes String[]
   badge           String?
   attributes      String[]
+  brand           String?
+  fabrics         String[]
+  sizeSystem      String?
   isActive        Boolean        @default(true)
   sortOrder       Int            @default(0)
   gradientIndex   Int            @default(0)

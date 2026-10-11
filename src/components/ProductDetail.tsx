@@ -32,6 +32,8 @@ export type ProductDetailData = {
   ratingCount: number;
   stock: number;
   description: string | null;
+  brand?: string | null;
+  fabrics?: string[];
   features: string[];
   colors: string[];
   sizes: string[];
@@ -123,6 +125,13 @@ export default function ProductDetail({
             {low ? `נותרו ${product.stock} יחידות במלאי` : "במלאי — נשלח תוך יום עסקים"}
           </div>
           <p style={{ color: "var(--ink-2)", marginTop: 12 }}>{product.description}</p>
+          {(product.brand || product.fabrics?.length) && (
+            <p style={{ color: "var(--ink-2)", fontSize: 14, margin: "6px 0 0" }}>
+              {product.brand && <>מותג: {product.brand}</>}
+              {product.brand && product.fabrics?.length ? " · " : ""}
+              {product.fabrics?.length ? <>הרכב: {product.fabrics.join(", ")}</> : null}
+            </p>
+          )}
 
           <div className="lbl">
             <span>צבע</span>

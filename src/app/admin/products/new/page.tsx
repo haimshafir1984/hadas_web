@@ -24,6 +24,9 @@ export default async function NewProductPage() {
         initial={{
           sku: "",
           attributes: [],
+          brand: "",
+          fabrics: [],
+          sizeSystem: "",
           isActive: true,
           name: "",
           categoryId: navCategories[0]?.id ?? "",
