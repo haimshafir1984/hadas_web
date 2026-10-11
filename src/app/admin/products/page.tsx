@@ -11,8 +11,13 @@ export default async function AdminProductsPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const categories = await prisma.category.findMany({ orderBy: { order: "asc" } });
   const rows: AdminProductRow[] = products.map((p) => ({
     id: p.id,
+    sku: p.sku,
+    categoryId: p.categoryId,
+    isActive: p.isActive,
+    sortOrder: p.sortOrder,
     name: p.name,
     badge: p.badge,
     categoryName: p.category.name,
@@ -35,7 +40,7 @@ export default async function AdminProductsPage() {
         </Link>
       }
     >
-      <ProductsTable rows={rows} />
+      <ProductsTable rows={rows} categories={categories.map((c) => ({ id: c.id, name: c.name }))} />
     </AdminShell>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import AdminShell from "@/components/admin/AdminShell";
 import AddCategoryForm from "@/components/admin/AddCategoryForm";
+import MoveButtons from "@/components/admin/MoveButtons";
 import DeleteCategoryButton from "@/components/admin/DeleteCategoryButton";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +37,7 @@ export default async function AdminCategoriesPage() {
                   <td>{c.subcategories.length}</td>
                   <td>{c.products.length + c.extraProducts.length}</td>
                   <td style={{ whiteSpace: "nowrap" }}>
+                    <MoveButtons url={`/api/admin/categories/${c.id}`} />{" "}
                     <Link className="mini" href={`/admin/cats/${c.id}`}>
                       עריכה
                     </Link>{" "}

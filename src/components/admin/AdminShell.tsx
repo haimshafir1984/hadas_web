@@ -8,6 +8,8 @@ const NAV = [
   { href: "/admin/import", label: "ייבוא מאקסל", d: "M12 4v10M8 10l4 4 4-4M5 19h14" },
   { href: "/admin/import/images", label: "העלאת תמונות", d: "M4 6h16v12H4zM4 15l5-5 4 4 3-3 4 4" },
   { href: "/admin/cats", label: "קטגוריות", d: "M4 6h16M4 12h16M4 18h10" },
+  { href: "/admin/guides", label: "מדריכים", d: "M6 4h12v16H6zM9 8h6M9 12h6M9 16h4" },
+  { href: "/admin/featured", label: "דף הבית והמלצות", d: "M12 4l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z" },
   { href: "/admin/texts", label: "טקסטים", d: "M5 6h14M5 12h14M5 18h9" },
   { href: "/admin/orders", label: "הזמנות", d: "M6 4h12l1 16H5zM9 8h6" },
   { href: "/admin/settings", label: "הגדרות", d: "M12 8a4 4 0 100 8 4 4 0 000-8zM3 12h3M18 12h3M12 3v3M12 18v3" },

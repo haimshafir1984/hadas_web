@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { QUIZ_STEPS } from "@/lib/constants";
 import ProductCard from "./ProductCard";
 import type { ProductCardData } from "@/lib/types";
+import type { QuizStep } from "@/lib/text-parse";
 
-export default function QuizClient({ recommended }: { recommended: ProductCardData[] }) {
+export default function QuizClient({ recommended, steps: QUIZ_STEPS }: { recommended: ProductCardData[]; steps: QuizStep[] }) {
   const [step, setStep] = useState(0);
   const totalSteps = QUIZ_STEPS.length + 1;
 

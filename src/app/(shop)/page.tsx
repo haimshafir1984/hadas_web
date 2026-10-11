@@ -3,13 +3,14 @@ import { prisma } from "@/lib/prisma";
 import Carousel from "@/components/Carousel";
 import { CategoryTile, GuideTile } from "@/components/CategoryTile";
 import StageTile from "@/components/StageTile";
-import { getTexts } from "@/lib/site-texts";
+import { getSetting, getTexts } from "@/lib/site-texts";
 
 export const dynamic = "force-dynamic";
 
 const withSubs = { subcategories: { orderBy: { order: "asc" as const } } };
 
 export default async function HomePage() {
+  const heroImage = await getSetting("home.hero.image");
   const [bras, under, cloth, circles, guides, t] = await Promise.all([
     prisma.category.findUnique({ where: { id: "bras" }, include: withSubs }),
     prisma.category.findUnique({ where: { id: "under" }, include: withSubs }),
@@ -38,8 +39,8 @@ export default async function HomePage() {
             <span className="who">{t["home.hero.who"]}</span> · <Link href="/about">{t["home.hero.link"]}</Link>
           </div>
         </div>
-        <div className="owner-pic" aria-hidden="true">
-          ה
+        <div className="owner-pic" aria-hidden="true" style={heroImage ? { background: "none", overflow: "hidden" } : undefined}>
+          {heroImage ? <img src={heroImage} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "ה"}
         </div>
       </div>
 

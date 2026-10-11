@@ -11,6 +11,15 @@ import TiltCard from "./TiltCard";
 import { BraSizeTable, ClothingSizeTable } from "./SizeCharts";
 import { CheckIcon } from "./icons";
 import type { ProductCardData } from "@/lib/types";
+import type { Review } from "@/lib/text-parse";
+
+export type ProductContent = {
+  perks: string[];
+  shipping: string;
+  reviews: Review[];
+  braRows: string[][];
+  clothingRows: string[][];
+};
 
 export type ProductDetailData = {
   id: string;
@@ -35,9 +44,11 @@ export type ProductDetailData = {
 export default function ProductDetail({
   product,
   related,
+  content,
 }: {
   product: ProductDetailData;
   related: ProductCardData[];
+  content: ProductContent;
 }) {
   const firstAvailableSize = product.sizes.find((s) => !product.outOfStockSizes.includes(s)) ?? product.sizes[0];
   const [color, setColor] = useState(product.colors[0]);
@@ -166,22 +177,16 @@ export default function ProductDetail({
           </div>
 
           <div className="perks">
-            <div>
-              <CheckIcon />
-              <span>החלפה והחזרה תוך 14 יום, גם על פריטי מבצע</span>
-            </div>
-            <div>
-              <CheckIcon />
-              <span>ייעוץ מידה חינם בוואטסאפ לפני ההזמנה</span>
-            </div>
-            <div>
-              <CheckIcon />
-              <span>איסוף מהחנות בפתח תקווה — חינם, תוך שעתיים</span>
-            </div>
+            {content.perks.map((p, i) => (
+              <div key={i}>
+                <CheckIcon />
+                <span>{p}</span>
+              </div>
+            ))}
           </div>
 
           <div className="tabs">
-            {["מאפיינים", "טבלת מידות", "משלוח והחזרה", `חוות דעת (${product.ratingCount})`].map((t, i) => (
+            {["מאפיינים", "טבלת מידות", "משלוח והחזרה", `חוות דעת (${content.reviews.length})`].map((t, i) => (
               <button key={t} className={`tab ${tab === i ? "on" : ""}`} onClick={() => setTab(i)} type="button">
                 {t}
               </button>
@@ -194,24 +199,19 @@ export default function ProductDetail({
               ))}
             </ul>
           </div>
-          <div className={`tabp ${tab === 1 ? "on" : ""}`}>{isBra ? <BraSizeTable /> : <ClothingSizeTable />}</div>
-          <div className={`tabp ${tab === 2 ? "on" : ""}`}>
-            משלוח שליח עד הבית ₪29, חינם מעל ₪250. איסוף עצמי מהחנות בפתח תקווה — חינם. החלפה או החזרה תוך 14 יום עם
-            תווית מחוברת. תחתונים ובגדי ים אינם ניתנים להחזרה מטעמי היגיינה.
-          </div>
+          <div className={`tabp ${tab === 1 ? "on" : ""}`}>{isBra ? <BraSizeTable rows={content.braRows} /> : <ClothingSizeTable rows={content.clothingRows} />}</div>
+          <div className={`tabp ${tab === 2 ? "on" : ""}`}>{content.shipping}</div>
           <div className={`tabp ${tab === 3 ? "on" : ""}`}>
-            <div style={{ borderBottom: "1px solid var(--line)", paddingBottom: 12, marginBottom: 12 }}>
-              <div className="stars">
-                ★★★★★ <span>נועה, לפני שבועיים</span>
+            {content.reviews.length === 0 && <p style={{ margin: 0, color: "var(--ink-2)" }}>עדיין אין חוות דעת.</p>}
+            {content.reviews.map((r, i) => (
+              <div key={i} style={i < content.reviews.length - 1 ? { borderBottom: "1px solid var(--line)", paddingBottom: 12, marginBottom: 12 } : undefined}>
+                <div className="stars">
+                  {"★".repeat(r.stars)}
+                  {"☆".repeat(5 - r.stars)} <span>{r.name}, {r.when}</span>
+                </div>
+                <p style={{ margin: "4px 0 0" }}>{r.text}</p>
               </div>
-              <p style={{ margin: "4px 0 0" }}>״הזמנתי אחרי שהתייעצתי בוואטסאפ. המידה שהמליצו הייתה בול, בלי החזרה.״</p>
-            </div>
-            <div>
-              <div className="stars">
-                ★★★★☆ <span>דנה, לפני חודש</span>
-              </div>
-              <p style={{ margin: "4px 0 0" }}>״נוחה מאוד, אבל הצבע קצת יותר בהיר מהתמונה.״</p>
-            </div>
+            ))}
           </div>
         </div>
       </div>

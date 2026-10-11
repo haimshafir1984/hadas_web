@@ -1,6 +1,4 @@
-import { BRA_SIZE_TABLE, CLOTHING_SIZE_TABLE } from "@/lib/constants";
-
-export function BraSizeTable() {
+export function BraSizeTable({ rows }: { rows: string[][] }) {
   return (
     <div className="t-scroll">
       <table className="t">
@@ -14,7 +12,7 @@ export function BraSizeTable() {
           </tr>
         </thead>
         <tbody>
-          {BRA_SIZE_TABLE.map((row) => (
+          {rows.map((row) => (
             <tr key={row[0]}>
               {row.map((cell, i) => (
                 <td key={i}>{cell}</td>
@@ -28,7 +26,7 @@ export function BraSizeTable() {
   );
 }
 
-export function ClothingSizeTable() {
+export function ClothingSizeTable({ rows }: { rows: string[][] }) {
   return (
     <div className="t-scroll">
       <table className="t">
@@ -41,7 +39,7 @@ export function ClothingSizeTable() {
           </tr>
         </thead>
         <tbody>
-          {CLOTHING_SIZE_TABLE.map((row) => (
+          {rows.map((row) => (
             <tr key={row[0]}>
               {row.map((cell, i) => (
                 <td key={i}>{cell}</td>

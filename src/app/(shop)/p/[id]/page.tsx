@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProductDetail from "@/components/ProductDetail";
 import type { ProductCardData } from "@/lib/types";
+import { getTexts } from "@/lib/site-texts";
+import { lines, parseReviews, parseTable } from "@/lib/text-parse";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +21,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     take: 4,
   });
 
+  const t = await getTexts();
   const related: ProductCardData[] = relatedRaw.map((p) => ({
     id: p.id,
     name: p.name,
@@ -57,6 +60,13 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         images: product.images,
       }}
       related={related}
+      content={{
+        perks: lines(t["pdp.perks"]),
+        shipping: t["pdp.shipping"],
+        reviews: parseReviews(t["pdp.reviews"]),
+        braRows: parseTable(t["size.bra"], 5),
+        clothingRows: parseTable(t["size.clothing"], 4),
+      }}
     />
   );
 }

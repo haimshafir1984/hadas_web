@@ -123,6 +123,16 @@ export default function ProductForm({
     }
   };
 
+  const moveImage = (url: string, dir: -1 | 1) =>
+    setValue((cur) => {
+      const i = cur.imageUrls.indexOf(url);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= cur.imageUrls.length) return cur;
+      const next = [...cur.imageUrls];
+      [next[i], next[j]] = [next[j], next[i]];
+      return { ...cur, imageUrls: next };
+    });
+
   const removeImage = (url: string) => setValue((cur) => ({ ...cur, imageUrls: cur.imageUrls.filter((u) => u !== url) }));
 
   const save = async () => {
@@ -275,13 +285,22 @@ export default function ProductForm({
           {uploadError && <div className="err" style={{ marginTop: 8 }}>{uploadError}</div>}
           {value.imageUrls.length > 0 && (
             <div className="upload-thumbs">
-              {value.imageUrls.map((url) => (
+              {value.imageUrls.map((url, idx) => (
                 <div className="upload-thumb" key={url}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={url} alt="" />
                   <button type="button" onClick={() => removeImage(url)} aria-label="הסרה">
                     ×
                   </button>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginTop: 4 }}>
+                    <button type="button" className="mini" disabled={idx === 0} onClick={() => moveImage(url, -1)} aria-label="הזזה ימינה">
+                      ▶
+                    </button>
+                    {idx === 0 ? <b>ראשית</b> : <span />}
+                    <button type="button" className="mini" disabled={idx === value.imageUrls.length - 1} onClick={() => moveImage(url, 1)} aria-label="הזזה שמאלה">
+                      ◀
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

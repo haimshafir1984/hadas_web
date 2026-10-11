@@ -32,6 +32,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         address={settings?.address ?? "רח׳ הרצל 12, פתח תקווה"}
         phone={settings?.phone ?? "03-9000000"}
         aboutText={texts["footer.about"]}
+        whatsapp={texts["site.whatsapp"].replace(/\D/g, "")}
       />
     </>
   );

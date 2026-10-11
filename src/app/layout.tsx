@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Assistant } from "next/font/google";
 import "./globals.css";
+import { getTexts } from "@/lib/site-texts";
 import { CartProvider } from "@/lib/cart-context";
 import { ToastProvider } from "@/lib/toast-context";
 
@@ -11,10 +12,14 @@ const assistant = Assistant({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "פרפר סגול · חנות",
-  description: "הלבשה תחתונה, חזיות, ביגוד, תחתוני מחזור ובגדי ים צנועים.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const t = await getTexts();
+    return { title: t["seo.title"], description: t["seo.description"] };
+  } catch {
+    return { title: "פרפר סגול · חנות" };
+  }
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

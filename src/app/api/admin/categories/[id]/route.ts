@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { reorderIds } from "@/lib/reorder";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,6 +13,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     data: { ...(name ? { name } : {}), blurb },
   });
 
+  return NextResponse.json({ ok: true });
+}
+
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const body = await req.json().catch(() => null);
+  if (body?.move !== "up" && body?.move !== "down") return NextResponse.json({ error: "בקשה לא תקינה" }, { status: 400 });
+  const all = await prisma.category.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }], select: { id: true } });
+  const next = reorderIds(all.map((c) => c.id), id, body.move);
+  if (next) await prisma.$transaction(next.map((cid, order) => prisma.category.update({ where: { id: cid }, data: { order } })));
   return NextResponse.json({ ok: true });
 }
 

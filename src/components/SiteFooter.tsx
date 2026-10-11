@@ -10,12 +10,14 @@ export default function SiteFooter({
   address,
   phone,
   aboutText,
+  whatsapp,
 }: {
   categories: NavCategory[];
   storeName: string;
   address: string;
   phone: string;
   aboutText: string;
+  whatsapp?: string;
 }) {
   return (
     <>
@@ -68,7 +70,7 @@ export default function SiteFooter({
           </div>
         </div>
       </footer>
-      <a className="wa" href="/about" aria-label="וואטסאפ">
+      <a className="wa" href={whatsapp ? `https://wa.me/${whatsapp}` : "/about"} aria-label="וואטסאפ" target={whatsapp ? "_blank" : undefined} rel="noopener noreferrer">
         <WhatsAppIcon />
       </a>
     </>

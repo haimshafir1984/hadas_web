@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTexts } from "@/lib/site-texts";
+import { parseTable } from "@/lib/text-parse";
 import { BraSizeTable, ClothingSizeTable } from "@/components/SizeCharts";
 
 export const dynamic = "force-dynamic";
@@ -25,10 +26,10 @@ export default async function SizeGuidePage() {
         </ol>
 
         <h3>טבלת חזיות</h3>
-        <BraSizeTable />
+        <BraSizeTable rows={parseTable(t["size.bra"], 5)} />
 
         <h3>טבלת ביגוד והלבשה תחתונה</h3>
-        <ClothingSizeTable />
+        <ClothingSizeTable rows={parseTable(t["size.clothing"], 4)} />
 
         <h3>טיפים</h3>
         <ul className="feat" style={{ color: "var(--ink-2)" }}>

@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import LineIcon from "../LineIcon";
+import MoveButtons from "./MoveButtons";
 
 type Sub = { id: string; name: string; iconUrl: string | null };
 
@@ -89,6 +90,7 @@ export default function SubcategoryManager({ categoryId, subs }: { categoryId: s
               <span className="sub-row-icon">
                 <LineIcon name={s.name} size={34} iconUrl={s.iconUrl} />
               </span>
+              <MoveButtons url={`/api/admin/categories/${categoryId}/subcategories/${s.id}`} />
               <span className="sub-row-name">{s.name}</span>
               <input
                 ref={(el) => {
