@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { nis } from "@/lib/format";
 import OrderStatusSelect from "./OrderStatusSelect";
 
@@ -27,6 +28,7 @@ export default function OrdersTable({ orders }: { orders: OrderRow[] }) {
             <th>פריטים</th>
             <th>סה״כ</th>
             <th>סטטוס</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -35,7 +37,7 @@ export default function OrdersTable({ orders }: { orders: OrderRow[] }) {
             const qty = items.reduce((a, i) => a + (i.qty ?? 0), 0);
             return (
               <tr key={o.id}>
-                <td style={{ fontWeight: 600 }}>{o.orderNumber}</td>
+                <td style={{ fontWeight: 600 }}><Link href={`/admin/orders/${o.id}`} style={{ color: "var(--violet)" }}>{o.orderNumber}</Link></td>
                 <td>{new Date(o.createdAt).toLocaleDateString("he-IL")}</td>
                 <td>
                   {o.customerName}
@@ -49,6 +51,11 @@ export default function OrdersTable({ orders }: { orders: OrderRow[] }) {
                 </td>
                 <td>
                   <OrderStatusSelect orderId={o.id} status={o.status} />
+                </td>
+                <td>
+                  <Link className="mini" href={`/admin/orders/${o.id}`}>
+                    פרטים
+                  </Link>
                 </td>
               </tr>
             );
