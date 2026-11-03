@@ -61,8 +61,10 @@ export async function POST(req: NextRequest) {
   const files = form.getAll("file").filter((f): f is File => f instanceof File);
   if (!files.length) return NextResponse.json({ error: "לא נבחר קובץ" }, { status: 400 });
 
-  const useLocalStorage = process.env.NODE_ENV !== "production" && !process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
+  // UPLOAD_DIR = a persistent folder (e.g. a Docker volume) used in production on a VPS; served by /uploads/[name].
+  const useLocalStorage =
+    !!process.env.UPLOAD_DIR || (process.env.NODE_ENV !== "production" && !process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const uploadsDir = process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
   if (useLocalStorage) await mkdir(uploadsDir, { recursive: true });
 
   const urls: string[] = [];
